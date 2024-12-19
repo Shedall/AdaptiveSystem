@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import "./styles/App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 const App = () => {
   return (

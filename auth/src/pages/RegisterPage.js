@@ -1,12 +1,38 @@
 import React from "react";
-import Register from "../components/Register";
-import "../styles/Register.css";
+import Register from "../components/Register"; // Предполагаем, что компонент Register существует
+import "../styles/Register.css"; // Если у вас есть отдельный CSS файл для регистрации
 
 const RegisterPage = () => {
   return (
-    <div className="container">
-      <h2>Регистрация</h2>
-      <Register />
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{
+        minHeight: "100vh", // Высота на весь экран
+        backgroundColor: "#f9f4ef",
+        padding: "20px", // Отступы для мобильных экранов
+      }}
+    >
+      <div
+        className="shadow-lg p-5"
+        style={{
+          backgroundColor: "#fff",
+          width: "1200px", // Увеличенная ширина
+          maxWidth: "100%", // Для адаптивности
+          borderRadius: "10px",
+        }}
+      >
+        <h2
+          className="text-center mb-4"
+          style={{
+            fontFamily: "Georgia, serif",
+            fontSize: "28px",
+            color: "#5A3E36",
+          }}
+        >
+          Регистрация
+        </h2>
+        <Register /> {/* Компонент для регистрации */}
+      </div>
     </div>
   );
 };
