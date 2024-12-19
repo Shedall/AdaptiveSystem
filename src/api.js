@@ -1,7 +1,25 @@
-import axios from 'axios';
+const API_BASE_URL = 'http://localhost:8000';
 
-const API = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/', // Базовый URL вашего Django API
-});
-
-export default API;
+export const userService = {
+  login: async (credentials) => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    return response.json();
+  },
+  register: async (formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        body: formData,
+      });
+      return response.json();
+    } catch (error) {
+      throw error;
+    }
+  },
+};

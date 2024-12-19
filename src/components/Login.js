@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { userService } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,13 +18,32 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/auth/login", formData);
+      const response = await userService.login(formData);
+
+      if (response.detail) {
+        setError(response.detail);
+        return;
+      }
+
+      localStorage.setItem('userData', JSON.stringify({
+        fio: response.fio,
+        email: response.email,
+        image: response.image,
+        id: response.id
+      }));
+      localStorage.setItem('accessToken', response.access_token);
+
       setSuccess("Вы успешно вошли!");
-      console.log("Ответ сервера:", response.data);
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error) {
       setError(error.response?.data?.detail || "Ошибка входа. Проверьте данные и попробуйте снова.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,13 +56,13 @@ const Login = () => {
               <h2 className="text-center mb-4">Вход</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label className="form-label">Имя пользователя:</label>
+                  <label className="form-label">Email:</label>
                   <input
-                    type="text"
+                    type="email"
                     className="form-control"
                     style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
-                    name="username"
-                    value={formData.username}
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
                     required
                   />
@@ -61,8 +83,9 @@ const Login = () => {
                   type="submit"
                   className="btn w-100"
                   style={{ backgroundColor: "#5A3E36", color: "#fff", borderRadius: "5px", border: "none" }}
+                  disabled={isLoading}
                 >
-                  Войти
+                  {isLoading ? "Загрузка..." : "Войти"}
                 </button>
 
               </form>

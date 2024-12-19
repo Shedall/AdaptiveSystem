@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { userService } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ fio: "", email: "", password: "", image: null });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +22,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setIsLoading(true);
 
     const formDataToSend = new FormData();
     formDataToSend.append("fio", formData.fio);
@@ -27,13 +31,29 @@ const Register = () => {
     if (formData.image) formDataToSend.append("image", formData.image);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/auth/register", formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await userService.register(formDataToSend);
+
+      if (response.detail) {
+        setError(response.detail);
+        return;
+      }
+
+      localStorage.setItem('userData', JSON.stringify({
+        fio: response.fio,
+        email: response.email,
+        image: response.image,
+        id: response.id
+      }));
+      localStorage.setItem('accessToken', response.access_token);
+
       setSuccess("Вы успешно зарегистрировались!");
-      console.log("Ответ сервера:", response.data);
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error) {
-      setError(error.response?.data?.email || "Ошибка регистрации. Проверьте данные и попробуйте снова.");
+      setError(error.response?.data?.detail || error.response?.data?.email || "Ошибка регистрации. Проверьте данные и попробуйте снова.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,6 +70,7 @@ const Register = () => {
                   <input
                     type="text"
                     className="form-control"
+                    style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
                     name="fio"
                     value={formData.fio}
                     onChange={handleChange}
@@ -61,6 +82,7 @@ const Register = () => {
                   <input
                     type="email"
                     className="form-control"
+                    style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
@@ -72,6 +94,7 @@ const Register = () => {
                   <input
                     type="password"
                     className="form-control"
+                    style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
@@ -80,9 +103,22 @@ const Register = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Изображение (необязательно):</label>
-                  <input type="file" className="form-control" onChange={handleFileChange} />
+                  <input
+                    type="file"
+                    className="form-control"
+                    style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                  />
                 </div>
-                <button type="submit" className="btn btn-success w-100">Зарегистрироваться</button>
+                <button
+                  type="submit"
+                  className="btn w-100"
+                  style={{ backgroundColor: "#5A3E36", color: "#fff", borderRadius: "5px", border: "none" }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Загрузка..." : "Зарегистрироваться"}
+                </button>
               </form>
               {error && <div className="alert alert-danger mt-3">{error}</div>}
               {success && <div className="alert alert-success mt-3">{success}</div>}
