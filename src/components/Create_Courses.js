@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CourseService } from "../api"; // Предполагается, что вы используете отдельный модуль для API-запросов.
+import { CourseService } from "../api";
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -10,13 +10,30 @@ const CreateCourse = () => {
     name: "",
     description: "",
     image: null,
-    category: null,
+    category: "",
   });
+
+  // Добавляем состояние для категорий
+  const [categories, setCategories] = useState([]);
 
   // Управление состоянием ошибок, успешного создания и загрузки
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Загрузка категорий при монтировании компонента
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await CourseService.getCategories();
+        setCategories(response.results);
+      } catch (error) {
+        setError("Ошибка при загрузке категорий");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Обработчик изменения текстовых полей формы
   const handleChange = (e) => {
@@ -54,10 +71,9 @@ const CreateCourse = () => {
 
       setSuccess("Курс успешно создан!");
       setTimeout(() => {
-        navigate("/"); // Перенаправляем на страницу списка курсов
+        navigate("/teach"); // Перенаправляем на страницу списка курсов
       }, 2000);
     } catch (error) {
-
       setError(error);
     } finally {
       setIsLoading(false);
@@ -107,15 +123,22 @@ const CreateCourse = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Категория (необязательно):</label>
-                  <input
-                    type="text"
-                    className="form-control"
+                  <label className="form-label">Категория:</label>
+                  <select
+                    className="form-select"
                     style={{ borderRadius: "5px", border: "1px solid #D2C4B3" }}
                     name="category"
-                    value={formData.category || ""}
+                    value={formData.category}
                     onChange={handleChange}
-                  />
+                    required
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <button
                   type="submit"
@@ -127,12 +150,12 @@ const CreateCourse = () => {
                 </button>
               </form>
               {error && (
-              <div className="alert alert-danger">
-                {error.name && <p>Курс с таким названием уже существует</p>}
-                {error.description && <p>Ошибка в описании курса: Поле описания не может быть пустым</p>}
-                {error.detail && <p>{error.detail}</p>}
-              </div>
-            )}
+                <div className="alert alert-danger">
+                  {error.name && <p>Курс с таким названием уже существует</p>}
+                  {error.description && <p>Ошибка в описании курса: Поле описания не может быть пустым</p>}
+                  {error.detail && <p>{error.detail}</p>}
+                </div>
+              )}
               {success && <div className="alert alert-success mt-3">{success}</div>}
             </div>
           </div>
