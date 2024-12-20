@@ -1,13 +1,21 @@
 const API_BASE_URL = 'http://localhost:8000';
 
-// Универсальная функция для обработки ошибок
 const handleErrors = async (response) => {
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.detail || 'Ошибка сервера');
+
+    // Если сервер возвращает объект с полями ошибок
+    if (errorData && typeof errorData === "object") {
+      throw errorData; // Бросаем весь объект ошибок
+    }
+
+    // Если есть "detail"
+    throw { detail: errorData.detail || "Ошибка сервера" }; // Оборачиваем detail в объект
   }
+
   return response.json();
 };
+
 
 // Генерация заголовков
 const getHeaders = (isJSON = true) => {
@@ -39,6 +47,23 @@ export const userService = {
     const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       body: formData,
+    });
+    return handleErrors(response);
+  },
+
+  aboutme: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/about_me`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleErrors(response);
+  },
+
+  updatepassword: async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/update_password`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(formData),
     });
     return handleErrors(response);
   },

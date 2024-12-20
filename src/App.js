@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CreateCoursePage from "./pages/CreateCoursePage"
+import UserInfoPage from "./pages/AboutMePage";
 import "./styles/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -27,7 +28,15 @@ const App = () => {
             </PrivateRoute>
           }
         />
-      </Routes>
+      <Route
+          path="/userprofile"
+          element={
+            <PrivateRoute>
+              <UserInfoPage />
+            </PrivateRoute>
+          }
+        />
+        </Routes>
     </Router>
   );
 };
