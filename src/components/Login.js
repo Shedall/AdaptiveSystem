@@ -36,6 +36,8 @@ const Login = () => {
       }));
       localStorage.setItem('accessToken', response.access_token);
 
+      console.log("Log", response.access_token)
+
       setSuccess("Вы успешно вошли!");
       setTimeout(() => {
         navigate('/');
