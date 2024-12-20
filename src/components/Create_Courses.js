@@ -57,7 +57,8 @@ const CreateCourse = () => {
         navigate("/"); // Перенаправляем на страницу списка курсов
       }, 2000);
     } catch (error) {
-      setError(error.response?.data?.detail || "Ошибка создания курса. Попробуйте снова.");
+
+      setError(error);
     } finally {
       setIsLoading(false);
     }
@@ -125,7 +126,13 @@ const CreateCourse = () => {
                   {isLoading ? "Загрузка..." : "Создать курс"}
                 </button>
               </form>
-              {error && <div className="alert alert-danger mt-3">{error}</div>}
+              {error && (
+              <div className="alert alert-danger">
+                {error.name && <p>Курс с таким названием уже существует</p>}
+                {error.description && <p>Ошибка в описании курса: Поле описания не может быть пустым</p>}
+                {error.detail && <p>{error.detail}</p>}
+              </div>
+            )}
               {success && <div className="alert alert-success mt-3">{success}</div>}
             </div>
           </div>
