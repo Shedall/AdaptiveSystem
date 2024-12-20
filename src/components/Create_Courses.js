@@ -71,7 +71,7 @@ const CreateCourse = () => {
 
       setSuccess("Курс успешно создан!");
       setTimeout(() => {
-        navigate("/"); // Перенаправляем на страницу списка курсов
+        navigate("/teach"); // Перенаправляем на страницу списка курсов
       }, 2000);
     } catch (error) {
       setError(error);
