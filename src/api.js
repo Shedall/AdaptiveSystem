@@ -71,13 +71,19 @@ export const userService = {
 
 
 export const CourseService = {
-
-  // Создание курса
   createCourse: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/api/courses/`, {
       method: 'POST',
       headers: getHeaders(false), // Без `Content-Type`, т.к. используется `FormData`
       body: formData,
+    });
+    return handleErrors(response);
+  },
+
+  getCategories: async (searchQuery = '') => {
+    const response = await fetch(`${API_BASE_URL}/api/courses/categories/?search=${searchQuery}`, {
+      method: 'GET',
+      headers: getHeaders(),
     });
     return handleErrors(response);
   },
