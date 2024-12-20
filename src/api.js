@@ -42,6 +42,10 @@ export const userService = {
     });
     return handleErrors(response);
   },
+};
+
+
+export const CourseService = {
 
   // Создание курса
   createCourse: async (formData) => {

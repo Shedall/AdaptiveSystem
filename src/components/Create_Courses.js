@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userService } from "../api"; // Предполагается, что вы используете отдельный модуль для API-запросов.
+import { CourseService } from "../api"; // Предполагается, что вы используете отдельный модуль для API-запросов.
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const CreateCourse = () => {
 
     try {
       // Отправляем запрос на сервер через service
-      const response = await userService.createCourse(formDataToSend);
+      const response = await CourseService.createCourse(formDataToSend);
 
       if (response.detail) {
         setError(response.detail);
