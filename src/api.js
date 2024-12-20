@@ -87,6 +87,28 @@ export const CourseService = {
     });
     return handleErrors(response);
   },
+
+  getCourses: async (searchQuery = '', page = 1) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/all/?search=${searchQuery}&page=${page}`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getMyCourses: async () => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/my/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;
