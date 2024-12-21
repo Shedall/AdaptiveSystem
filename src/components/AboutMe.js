@@ -49,7 +49,6 @@ const UserInfo = () => {
         window.location.reload(); // Перенаправляем на страницу списка курсов
       }, 2000);// Очищаем форму
     } catch (err) {
-      console.log("hhg");
       setError(err.message || "Ошибка при смене пароля.");
     } finally {
       setIsPasswordLoading(false);

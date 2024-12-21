@@ -129,7 +129,7 @@ const CreateCourse = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    //required//Пока заккоментировал для тестов, так как категорий нет, выбрать не из чего, и получается вообще невозможно создать Курс.
+                    required
                   >
                     <option value="">Выберите категорию</option>
                     {categories.map((category) => (
