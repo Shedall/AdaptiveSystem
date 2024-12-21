@@ -86,7 +86,6 @@ const CreateCourse = () => {
         <div className="col-md-6">
           <div className="card shadow">
             <div className="card-body">
-              <h2 className="text-center mb-4">Создание курса</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">Название курса:</label>
@@ -130,7 +129,7 @@ const CreateCourse = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    required
+                    //required//Пока заккоментировал для тестов, так как категорий нет, выбрать не из чего, и получается вообще невозможно создать Курс.
                   >
                     <option value="">Выберите категорию</option>
                     {categories.map((category) => (

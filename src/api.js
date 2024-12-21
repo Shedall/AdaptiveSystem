@@ -3,7 +3,7 @@ const API_BASE_URL = 'http://localhost:8000';
 const handleErrors = async (response) => {
   if (!response.ok) {
     const errorData = await response.json();
-
+    console.log("ghj");
     // Если сервер возвращает объект с полями ошибок
     if (errorData && typeof errorData === "object") {
       throw errorData; // Бросаем весь объект ошибок
