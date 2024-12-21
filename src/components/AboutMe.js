@@ -57,23 +57,42 @@ const UserInfo = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">Профиль пользователя</h1>
-
-      {/* Информация о пользователе */}
-      {error && <div className="alert alert-danger">{error}</div>}
-      {userInfo && (
-        <div className="card shadow mb-4">
-          <div className="card-body">
-            <h3>ФИО: {userInfo.fio}</h3>
-            <p>Email: {userInfo.email}</p>
-            {userInfo.image ? (
-              <img src={userInfo.image} alt="User" className="img-fluid rounded" />
-            ) : (
-              <p>Изображение не загружено</p>
-            )}
-          </div>
+    {/* Информация о пользователе */}
+    {error && <div className="alert alert-danger">{error}</div>}
+    {userInfo && (
+      <div className="card shadow mb-4">
+        <div className="card-body">
+          <h3>ФИО: {userInfo.fio}</h3>
+          <p>Email: {userInfo.email}</p>
+          {userInfo.image ? (
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "600px", // Максимальная ширина изображения
+                height: "400px",   // Фиксированная высота контейнера
+                overflow: "hidden", // Скрываем выходящее содержимое
+                borderRadius: "10px", // Округленные углы (опционально)
+                margin: "0 auto",   // Центрируем изображение
+                //marginLeft: "auto",  // Выравниваем контейнер по правому краю
+                //display: "block",    // Устанавливаем блочное поведение
+              }}
+            >
+              <img
+                src={userInfo.image}
+                alt="User"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover", // Делаем изображение адаптивным и обрезаем лишнее
+                }}
+              />
+            </div>
+          ) : (
+            <p>Изображение не загружено</p>
+          )}
         </div>
-      )}
+      </div>
+    )}
 
       {/* Форма для смены пароля */}
       <div className="card shadow">

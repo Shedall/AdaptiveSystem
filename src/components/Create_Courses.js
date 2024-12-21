@@ -86,7 +86,6 @@ const CreateCourse = () => {
         <div className="col-md-6">
           <div className="card shadow">
             <div className="card-body">
-              <h2 className="text-center mb-4">Создание курса</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">Название курса:</label>

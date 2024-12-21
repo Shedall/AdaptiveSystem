@@ -63,7 +63,6 @@ const Register = () => {
         <div className="col-md-6">
           <div className="card shadow">
             <div className="card-body">
-              <h2 className="text-center mb-4">Регистрация</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">ФИО:</label>

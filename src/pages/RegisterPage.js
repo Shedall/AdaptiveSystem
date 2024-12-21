@@ -1,13 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Импортируем Link для навигации
 import Register from "../components/Register"; // Предполагаем, что компонент Register существует
 import "../styles/Register.css"; // Если у вас есть отдельный CSS файл для регистрации
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const RegisterPage = () => {
   return (
+    <>
+      <Header />
     <div
       className="d-flex justify-content-center align-items-center"
       style={{
-        minHeight: "100vh", // Высота на весь экран
+        minHeight: "81vh", // Высота на весь экран
         backgroundColor: "#f9f4ef",
         padding: "20px", // Отступы для мобильных экранов
       }}
@@ -31,9 +36,26 @@ const RegisterPage = () => {
         >
           Регистрация
         </h2>
-        <Register /> {/* Компонент для регистрации */}
+        <Register /> 
+        <div className="text-center mt-4">
+            <p style={{ fontSize: "16px", color: "#5A3E36" }}>
+              У вас есть аккаунт?{" "}
+              <Link
+                to="/login"
+                style={{
+                  textDecoration: "underline",
+                  color: "#5A3E36",
+                  fontWeight: "bold",
+                }}
+              >
+                Войдите!
+              </Link>
+            </p>
+          </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 
