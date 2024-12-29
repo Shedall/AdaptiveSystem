@@ -55,6 +55,13 @@ const Header = () => {
                 >
                   О нас
                 </Link>
+                <Link
+                  to="/formulas"
+                  className="me-3"
+                  style={linkStyle('/formulas')}
+                >
+                  Пример формул
+                </Link>
                 {isAuthenticated && (
                   <>
                     <Link
