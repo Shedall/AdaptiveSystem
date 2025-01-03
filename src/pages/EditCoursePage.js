@@ -288,17 +288,25 @@ const EditCoursePage = () => {
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
             <Header />
             {isMobile && <CourseSidebar courseData={courseData} isMobile={true} />}
-            <div style={{ display: "flex", flex: "1", overflow: "hidden" }}>
+            <div style={{
+                display: "flex",
+                flex: "1",
+                overflow: "hidden",
+                maxWidth: "1400px",
+                margin: "0 auto",
+                width: "100%",
+                paddingLeft: isMobile ? "20px" : windowWidth > 1400 ? "120px" : "40px",
+                paddingRight: isMobile ? "20px" : windowWidth > 1400 ? "120px" : "40px",
+                gap: "40px"
+            }}>
                 {!isMobile && <CourseSidebar courseData={courseData} isMobile={false} />}
                 <div style={{
                     flex: "1",
                     padding: "20px",
                     overflowY: "auto",
-                    maxWidth: "1400px",
+                    maxWidth: "1200px",
                     margin: "0 auto",
-                    width: "100%",
-                    paddingLeft: isMobile ? "20px" : "40px",
-                    paddingRight: isMobile ? "20px" : "40px"
+                    width: "100%"
                 }}>
                     <h1 style={{ color: "#5A3E36" }}>Редактирование курса</h1>
                     {error && (
