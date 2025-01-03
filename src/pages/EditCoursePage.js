@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { CourseService } from "../api";
+import Modal from '../components/Modal';
 
 const CourseSidebar = ({ courseData }) => {
     const location = useLocation();
@@ -163,6 +164,8 @@ const EditCoursePage = () => {
     const [editingModule, setEditingModule] = useState(null);
     const [editingTopic, setEditingTopic] = useState(null);
     const [selectedModule, setSelectedModule] = useState(null);
+    const [showModuleModal, setShowModuleModal] = useState(false);
+    const [showTopicModal, setShowTopicModal] = useState(false);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -193,10 +196,10 @@ const EditCoursePage = () => {
                     topics: [],
                 });
             }
-            // Refresh course data
             const updatedCourse = await CourseService.getCourseById(id);
             setCourseData(updatedCourse);
             setEditingModule(null);
+            setShowModuleModal(false);
         } catch (error) {
             setError("Ошибка при сохранении модуля");
         }
@@ -215,10 +218,10 @@ const EditCoursePage = () => {
                     module: selectedModule.id,
                 });
             }
-            // Refresh course data
             const updatedCourse = await CourseService.getCourseById(id);
             setCourseData(updatedCourse);
             setEditingTopic(null);
+            setShowTopicModal(false);
         } catch (error) {
             setError("Ошибка при сохранении темы");
         }
@@ -256,24 +259,15 @@ const EditCoursePage = () => {
                             <h2 style={{ color: "#5A3E36", margin: 0 }}>Модули</h2>
                             <button
                                 className="btn"
-                                onClick={() => setEditingModule({})}
+                                onClick={() => {
+                                    setEditingModule({});
+                                    setShowModuleModal(true);
+                                }}
                                 style={{ backgroundColor: "#5A3E36", color: "#fff" }}
                             >
                                 Добавить модуль
                             </button>
                         </div>
-
-                        {editingModule && (
-                            <div className="card mb-3">
-                                <div className="card-body">
-                                    <ModuleForm
-                                        module={editingModule}
-                                        onSave={handleSaveModule}
-                                        onCancel={() => setEditingModule(null)}
-                                    />
-                                </div>
-                            </div>
-                        )}
 
                         {courseData.modules.map(module => (
                             <div key={module.id} className="card mb-3">
@@ -286,7 +280,10 @@ const EditCoursePage = () => {
                                         <div className="d-flex gap-2">
                                             <button
                                                 className="btn btn-sm"
-                                                onClick={() => setEditingModule(module)}
+                                                onClick={() => {
+                                                    setEditingModule(module);
+                                                    setShowModuleModal(true);
+                                                }}
                                                 style={{
                                                     backgroundColor: "#D2C4B3",
                                                     color: "#5A3E36"
@@ -325,6 +322,7 @@ const EditCoursePage = () => {
                                                 onClick={() => {
                                                     setSelectedModule(module);
                                                     setEditingTopic({});
+                                                    setShowTopicModal(true);
                                                 }}
                                                 style={{
                                                     backgroundColor: "#5A3E36",
@@ -334,18 +332,6 @@ const EditCoursePage = () => {
                                                 Добавить тему
                                             </button>
                                         </div>
-
-                                        {selectedModule?.id === module.id && editingTopic && (
-                                            <div className="card mb-2 mt-2">
-                                                <div className="card-body">
-                                                    <TopicForm
-                                                        topic={editingTopic}
-                                                        onSave={handleSaveTopic}
-                                                        onCancel={() => setEditingTopic(null)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
 
                                         {module.topics.map(topic => (
                                             <div key={topic.id} className="card mb-2 mt-2">
@@ -361,6 +347,7 @@ const EditCoursePage = () => {
                                                                 onClick={() => {
                                                                     setSelectedModule(module);
                                                                     setEditingTopic(topic);
+                                                                    setShowTopicModal(true);
                                                                 }}
                                                                 style={{
                                                                     backgroundColor: "#D2C4B3",
@@ -399,6 +386,43 @@ const EditCoursePage = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Modals */}
+                    <Modal
+                        isOpen={showModuleModal}
+                        onClose={() => {
+                            setShowModuleModal(false);
+                            setEditingModule(null);
+                        }}
+                        title={editingModule?.id ? "Редактировать модуль" : "Создать модуль"}
+                    >
+                        <ModuleForm
+                            module={editingModule}
+                            onSave={handleSaveModule}
+                            onCancel={() => {
+                                setShowModuleModal(false);
+                                setEditingModule(null);
+                            }}
+                        />
+                    </Modal>
+
+                    <Modal
+                        isOpen={showTopicModal}
+                        onClose={() => {
+                            setShowTopicModal(false);
+                            setEditingTopic(null);
+                        }}
+                        title={editingTopic?.id ? "Редактировать тему" : "Создать тему"}
+                    >
+                        <TopicForm
+                            topic={editingTopic}
+                            onSave={handleSaveTopic}
+                            onCancel={() => {
+                                setShowTopicModal(false);
+                                setEditingTopic(null);
+                            }}
+                        />
+                    </Modal>
                 </div>
             </div>
             <Footer />
