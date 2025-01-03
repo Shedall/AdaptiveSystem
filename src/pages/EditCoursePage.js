@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { CourseService } from "../api";
 import Modal from '../components/Modal';
 
-const CourseSidebar = ({ courseData }) => {
+const CourseSidebar = ({ courseData, isMobile }) => {
     const location = useLocation();
     const { id } = useParams();
 
@@ -16,57 +16,90 @@ const CourseSidebar = ({ courseData }) => {
         // Other menu items will be added later
     ];
 
-    return (
-        <div
-            style={{
-                width: "250px",
-                backgroundColor: "#D2C4B3",
-                color: "#5A3E36",
-                padding: "20px",
-                display: "flex",
-                flexDirection: "column",
-                height: "auto",
-            }}
-        >
-            {/* Course Image */}
-            <div className="text-center mb-4">
-                <img
-                    src={courseData?.image || '/placeholder.png'}
-                    alt="Course"
-                    style={{
-                        width: "200px",
-                        height: "200px",
-                        objectFit: "cover",
-                        borderRadius: "5px",
-                        marginBottom: "15px"
-                    }}
-                    onError={(e) => {
-                        e.target.src = '/placeholder.png';
-                    }}
-                />
-                <h3 style={{
-                    fontSize: "16px",
-                    color: "#5A3E36",
-                    wordWrap: "break-word"
-                }}>
-                    {courseData?.name || "Loading..."}
-                </h3>
-            </div>
+    const sidebarStyle = isMobile ? {
+        width: '100%',
+        backgroundColor: "#D2C4B3",
+        color: "#5A3E36",
+        padding: "10px 20px",
+        borderBottom: "1px solid #5A3E36",
+        display: "flex",
+        alignItems: "center",
+        gap: "20px"
+    } : {
+        width: "250px",
+        backgroundColor: "#D2C4B3",
+        color: "#5A3E36",
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        height: "auto",
+    };
 
-            {/* Navigation Links */}
-            <nav style={{ flex: "1" }}>
+    const imageStyle = isMobile ? {
+        width: "50px",
+        height: "50px",
+        objectFit: "cover",
+        borderRadius: "5px",
+    } : {
+        width: "200px",
+        height: "200px",
+        objectFit: "cover",
+        borderRadius: "5px",
+        marginBottom: "15px"
+    };
+
+    const titleStyle = isMobile ? {
+        fontSize: "16px",
+        color: "#5A3E36",
+        margin: 0,
+        flex: 1
+    } : {
+        fontSize: "16px",
+        color: "#5A3E36",
+        wordWrap: "break-word",
+        marginTop: "15px"
+    };
+
+    const navStyle = isMobile ? {
+        display: "flex",
+        gap: "10px",
+        alignItems: "center"
+    } : {
+        flex: "1",
+        marginTop: "20px"
+    };
+
+    const linkStyle = (isActiveLink) => ({
+        display: "block",
+        color: isActiveLink ? "#5A3E36" : "#fff",
+        textDecoration: "none",
+        fontWeight: isActiveLink ? "bold" : "normal",
+        padding: isMobile ? "5px 10px" : "8px 0",
+        backgroundColor: isMobile ? (isActiveLink ? "#fff" : "#5A3E36") : "transparent",
+        borderRadius: isMobile ? "5px" : "0",
+        marginBottom: isMobile ? "0" : "10px",
+        fontSize: isMobile ? "14px" : "16px"
+    });
+
+    return (
+        <div style={sidebarStyle}>
+            <img
+                src={courseData?.image || '/placeholder.png'}
+                alt="Course"
+                style={imageStyle}
+                onError={(e) => {
+                    e.target.src = '/placeholder.png';
+                }}
+            />
+            <h3 style={titleStyle}>
+                {courseData?.name || "Loading..."}
+            </h3>
+            <nav style={navStyle}>
                 {menuItems.map((item) => (
                     <Link
                         key={item.path}
                         to={item.path}
-                        style={{
-                            display: "block",
-                            color: isActive(item.path) ? "#5A3E36" : "#fff",
-                            textDecoration: "none",
-                            marginBottom: "10px",
-                            fontWeight: isActive(item.path) ? "bold" : "normal",
-                            padding: "8px 0",
-                        }}
+                        style={linkStyle(isActive(item.path))}
                     >
                         {item.label}
                     </Link>
@@ -166,6 +199,8 @@ const EditCoursePage = () => {
     const [selectedModule, setSelectedModule] = useState(null);
     const [showModuleModal, setShowModuleModal] = useState(false);
     const [showTopicModal, setShowTopicModal] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -181,6 +216,14 @@ const EditCoursePage = () => {
 
         fetchCourse();
     }, [id]);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const isMobile = windowWidth < 768;
 
     const handleSaveModule = async (moduleData) => {
         try {
@@ -244,9 +287,19 @@ const EditCoursePage = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
             <Header />
+            {isMobile && <CourseSidebar courseData={courseData} isMobile={true} />}
             <div style={{ display: "flex", flex: "1", overflow: "hidden" }}>
-                <CourseSidebar courseData={courseData} />
-                <div style={{ flex: "1", padding: "20px", overflowY: "auto" }}>
+                {!isMobile && <CourseSidebar courseData={courseData} isMobile={false} />}
+                <div style={{
+                    flex: "1",
+                    padding: "20px",
+                    overflowY: "auto",
+                    maxWidth: "1400px",
+                    margin: "0 auto",
+                    width: "100%",
+                    paddingLeft: isMobile ? "20px" : "40px",
+                    paddingRight: isMobile ? "20px" : "40px"
+                }}>
                     <h1 style={{ color: "#5A3E36" }}>Редактирование курса</h1>
                     {error && (
                         <div className="alert alert-danger mt-3">
