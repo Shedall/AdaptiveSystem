@@ -1,6 +1,11 @@
 const API_BASE_URL = 'http://localhost:8000';
 
 const handleErrors = async (response) => {
+  // First check for 204 No Content
+  if (response.status === 204) {
+    return null;
+  }
+
   if (!response.ok) {
     const errorData = await response.json();
     // Если сервер возвращает объект с полями ошибок
@@ -127,6 +132,78 @@ export const CourseService = {
         method: 'PUT',
         headers: getHeaders(false),
         body: formData,
+      }
+    );
+    return handleErrors(response);
+  },
+
+  // Module methods
+  createModule: async (moduleData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/modules/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(moduleData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateModule: async (id, moduleData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/modules/${id}/`,
+      {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(moduleData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteModule: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/modules/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  // Topic methods
+  createTopic: async (topicData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/topics/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(topicData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateTopic: async (id, topicData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/topics/${id}/`,
+      {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(topicData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteTopic: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/topics/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
       }
     );
     return handleErrors(response);
