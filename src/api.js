@@ -108,6 +108,29 @@ export const CourseService = {
     );
     return handleErrors(response);
   },
+
+  getCourseById: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateCourse: async (id, formData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/${id}/`,
+      {
+        method: 'PUT',
+        headers: getHeaders(false),
+        body: formData,
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;
