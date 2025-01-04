@@ -33,4 +33,10 @@ export const auth = {
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userData", JSON.stringify(user));
     },
+
+    // Update user data
+    updateUserData: (userData) => {
+        if (!userData) return;
+        localStorage.setItem("userData", JSON.stringify(userData));
+    }
 };

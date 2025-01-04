@@ -50,24 +50,26 @@ const AboutMePage = () => {
       const data = new FormData();
       data.append('fio', formData.fio);
 
-      // Only append password fields if both are filled
       if (formData.old_password && formData.new_password) {
         data.append('old_password', formData.old_password);
         data.append('new_password', formData.new_password);
       } else if (formData.old_password || formData.new_password) {
-        // If only one password field is filled, show error
         setError("Для смены пароля необходимо заполнить оба поля");
         setIsLoading(false);
         return;
       }
 
-      // Only append image if it was changed
       if (formData.image) {
         data.append('image', formData.image);
       }
 
-      const response = await userService.updateProfile(data);
-      auth.updateUserData(response);
+      const updatedUser = await userService.updateProfile(data);
+
+      if (!updatedUser) {
+        throw new Error('Не удалось обновить профиль');
+      }
+
+      auth.updateUserData(updatedUser);
       setSuccess("Профиль успешно обновлен");
       setFormData(prev => ({
         ...prev,
@@ -75,8 +77,7 @@ const AboutMePage = () => {
         new_password: ""
       }));
     } catch (error) {
-      console.log(error);
-      setError(error.detail || "Ошибка при обновлении профиля");
+      setError(error.detail || error.message || "Ошибка при обновлении профиля");
     } finally {
       setIsLoading(false);
     }

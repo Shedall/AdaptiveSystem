@@ -91,7 +91,13 @@ export const userService = {
         body: formData,
       }
     );
-    return handleErrors(response);
+    const data = await handleErrors(response);
+    return {
+      id: data.id,
+      email: data.email,
+      fio: data.fio,
+      image: data.image
+    };
   },
 };
 
