@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import IconButton from '../IconButton';
 
 const TopicList = ({
     module,
@@ -12,16 +13,12 @@ const TopicList = ({
         <div className="mt-3">
             <div className="d-flex justify-content-between align-items-center">
                 <h4>Темы</h4>
-                <button
-                    className="btn btn-sm"
+                <IconButton
+                    icon="add_icon.svg"
+                    text="Добавить тему"
                     onClick={() => onAddTopic(module)}
-                    style={{
-                        backgroundColor: "#5A3E36",
-                        color: "#fff"
-                    }}
-                >
-                    Добавить тему
-                </button>
+                    size="sm"
+                />
             </div>
 
             {topics && topics.length > 0 ? (
@@ -41,32 +38,24 @@ const TopicList = ({
                                     <p className="mb-0">{topic.description}</p>
                                 </div>
                                 <div className="d-flex gap-2" style={{ zIndex: 1 }} onClick={e => e.preventDefault()}>
-                                    <button
-                                        className="btn btn-sm"
+                                    <IconButton
+                                        icon="edit_icon.svg"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             onEditTopic(module, topic);
                                         }}
-                                        style={{
-                                            backgroundColor: "#D2C4B3",
-                                            color: "#5A3E36"
-                                        }}
-                                    >
-                                        Редактировать
-                                    </button>
-                                    <button
-                                        className="btn btn-sm"
+                                        variant="secondary"
+                                        size="sm"
+                                    />
+                                    <IconButton
+                                        icon="delete_icon.svg"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             onDeleteTopic(topic.id);
                                         }}
-                                        style={{
-                                            backgroundColor: "#dc3545",
-                                            color: "#fff"
-                                        }}
-                                    >
-                                        Удалить
-                                    </button>
+                                        variant="danger"
+                                        size="sm"
+                                    />
                                 </div>
                             </div>
                         </Link>

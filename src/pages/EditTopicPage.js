@@ -6,6 +6,7 @@ import { CourseService } from "../api";
 import Modal from '../components/Modal';
 import ContentForm from '../components/course-edit/ContentForm';
 import TopicForm from '../components/course-edit/TopicForm';
+import IconButton from '../components/IconButton';
 
 const EditTopicPage = () => {
     const { id } = useParams();
@@ -113,19 +114,18 @@ const EditTopicPage = () => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h1 style={{ color: "#5A3E36" }}>{topicData?.name}</h1>
                     <div className="d-flex gap-2">
-                        <button
-                            className="btn"
+                        <IconButton
+                            icon="edit_icon.svg"
+                            text="Редактировать тему"
                             onClick={() => setShowTopicModal(true)}
-                            style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
-                        >
-                            Редактировать тему
-                        </button>
-                        <button
-                            className="btn btn-danger"
+                            variant="secondary"
+                        />
+                        <IconButton
+                            icon="delete_icon.svg"
+                            text="Удалить тему"
                             onClick={handleDeleteTopic}
-                        >
-                            Удалить тему
-                        </button>
+                            variant="danger"
+                        />
                     </div>
                 </div>
 
@@ -141,16 +141,14 @@ const EditTopicPage = () => {
                     <div className="card-body">
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <h5 className="card-title mb-0">Материалы темы</h5>
-                            <button
-                                className="btn"
+                            <IconButton
+                                icon="add_icon.svg"
+                                text="Добавить материал"
                                 onClick={() => {
                                     setEditingContent(null);
                                     setShowContentModal(true);
                                 }}
-                                style={{ backgroundColor: "#5A3E36", color: "#fff" }}
-                            >
-                                Добавить материал
-                            </button>
+                            />
                         </div>
                         {topicData?.contents && topicData.contents.length > 0 ? (
                             <div className="list-group">
@@ -173,25 +171,21 @@ const EditTopicPage = () => {
                                             {content.label}
                                         </a>
                                         <div className="d-flex gap-2" onClick={e => e.stopPropagation()}>
-                                            <button
-                                                className="btn btn-sm"
+                                            <IconButton
+                                                icon="edit_icon.svg"
                                                 onClick={() => {
                                                     setEditingContent(content);
                                                     setShowContentModal(true);
                                                 }}
-                                                style={{
-                                                    backgroundColor: "#D2C4B3",
-                                                    color: "#5A3E36"
-                                                }}
-                                            >
-                                                Редактировать
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-danger"
+                                                variant="secondary"
+                                                size="sm"
+                                            />
+                                            <IconButton
+                                                icon="delete_icon.svg"
                                                 onClick={() => handleDeleteContent(content.id)}
-                                            >
-                                                Удалить
-                                            </button>
+                                                variant="danger"
+                                                size="sm"
+                                            />
                                         </div>
                                     </div>
                                 ))}

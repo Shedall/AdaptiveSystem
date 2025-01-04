@@ -1,5 +1,6 @@
 import React from 'react';
 import TopicList from './TopicList';
+import IconButton from '../IconButton';
 
 const ModuleList = ({
     modules,
@@ -14,13 +15,11 @@ const ModuleList = ({
         <div className="mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 style={{ color: "#5A3E36", margin: 0 }}>Модули</h2>
-                <button
-                    className="btn"
+                <IconButton
+                    icon="add_icon.svg"
+                    text="Добавить модуль"
                     onClick={onAddModule}
-                    style={{ backgroundColor: "#5A3E36", color: "#fff" }}
-                >
-                    Добавить модуль
-                </button>
+                />
             </div>
 
             {modules && modules.length > 0 ? (
@@ -33,26 +32,18 @@ const ModuleList = ({
                                     <p>{module.description}</p>
                                 </div>
                                 <div className="d-flex gap-2">
-                                    <button
-                                        className="btn btn-sm"
+                                    <IconButton
+                                        icon="edit_icon.svg"
                                         onClick={() => onEditModule(module)}
-                                        style={{
-                                            backgroundColor: "#D2C4B3",
-                                            color: "#5A3E36"
-                                        }}
-                                    >
-                                        Редактировать
-                                    </button>
-                                    <button
-                                        className="btn btn-sm"
+                                        variant="secondary"
+                                        size="sm"
+                                    />
+                                    <IconButton
+                                        icon="delete_icon.svg"
                                         onClick={() => onDeleteModule(module.id)}
-                                        style={{
-                                            backgroundColor: "#dc3545",
-                                            color: "#fff"
-                                        }}
-                                    >
-                                        Удалить
-                                    </button>
+                                        variant="danger"
+                                        size="sm"
+                                    />
                                 </div>
                             </div>
 
