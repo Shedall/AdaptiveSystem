@@ -16,6 +16,16 @@ const Modal = ({ isOpen, onClose, title, children }) => {
                             type="button"
                             className="btn-close"
                             onClick={onClose}
+                            style={{
+                                opacity: 1,
+                                transition: 'background-color 0.2s'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.backgroundColor = '#D2C4B3';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                            }}
                         />
                     </div>
                     <div className="modal-body">

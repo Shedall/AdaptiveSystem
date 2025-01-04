@@ -8,9 +8,6 @@ const ModuleList = ({
     onAddTopic,
     onEditTopic,
     onDeleteTopic,
-    selectedModule,
-    editingTopic,
-    showTopicModal,
     onAddModule
 }) => {
     return (
@@ -26,51 +23,54 @@ const ModuleList = ({
                 </button>
             </div>
 
-            {modules.map(module => (
-                <div key={module.id} className="card mb-3">
-                    <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h3>{module.name}</h3>
-                                <p>{module.description}</p>
+            {modules && modules.length > 0 ? (
+                modules.map(module => (
+                    <div key={module.id} className="card mb-3">
+                        <div className="card-body">
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h3>{module.name}</h3>
+                                    <p>{module.description}</p>
+                                </div>
+                                <div className="d-flex gap-2">
+                                    <button
+                                        className="btn btn-sm"
+                                        onClick={() => onEditModule(module)}
+                                        style={{
+                                            backgroundColor: "#D2C4B3",
+                                            color: "#5A3E36"
+                                        }}
+                                    >
+                                        Редактировать
+                                    </button>
+                                    <button
+                                        className="btn btn-sm"
+                                        onClick={() => onDeleteModule(module.id)}
+                                        style={{
+                                            backgroundColor: "#dc3545",
+                                            color: "#fff"
+                                        }}
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
                             </div>
-                            <div className="d-flex gap-2">
-                                <button
-                                    className="btn btn-sm"
-                                    onClick={() => onEditModule(module)}
-                                    style={{
-                                        backgroundColor: "#D2C4B3",
-                                        color: "#5A3E36"
-                                    }}
-                                >
-                                    Редактировать
-                                </button>
-                                <button
-                                    className="btn btn-sm"
-                                    onClick={() => onDeleteModule(module.id)}
-                                    style={{
-                                        backgroundColor: "#dc3545",
-                                        color: "#fff"
-                                    }}
-                                >
-                                    Удалить
-                                </button>
-                            </div>
-                        </div>
 
-                        <TopicList
-                            module={module}
-                            topics={module.topics}
-                            onAddTopic={onAddTopic}
-                            onEditTopic={onEditTopic}
-                            onDeleteTopic={onDeleteTopic}
-                            selectedModule={selectedModule}
-                            editingTopic={editingTopic}
-                            showTopicModal={showTopicModal}
-                        />
+                            <TopicList
+                                module={module}
+                                topics={module.topics || []}
+                                onAddTopic={onAddTopic}
+                                onEditTopic={onEditTopic}
+                                onDeleteTopic={onDeleteTopic}
+                            />
+                        </div>
                     </div>
+                ))
+            ) : (
+                <div className="text-center p-4" style={{ color: "#5A3E36" }}>
+                    <p>В курсе пока нет модулей. Создайте первый модуль, нажав кнопку "Добавить модуль".</p>
                 </div>
-            ))}
+            )}
         </div>
     );
 };

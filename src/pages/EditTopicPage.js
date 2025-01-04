@@ -164,12 +164,15 @@ const EditTopicPage = () => {
                                             rel="noopener noreferrer"
                                             style={{
                                                 color: "#5A3E36",
-                                                textDecoration: "none"
+                                                textDecoration: "none",
+                                                flex: 1,
+                                                padding: "8px 0"
                                             }}
+                                            className="d-block"
                                         >
                                             {content.label}
                                         </a>
-                                        <div className="d-flex gap-2">
+                                        <div className="d-flex gap-2" onClick={e => e.stopPropagation()}>
                                             <button
                                                 className="btn btn-sm"
                                                 onClick={() => {
