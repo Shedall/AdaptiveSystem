@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { CourseService } from "../api";
 import Modal from '../components/Modal';
 import ContentForm from '../components/course-edit/ContentForm';
+import TopicForm from '../components/course-edit/TopicForm';
 
 const EditTopicPage = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [topicData, setTopicData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [showContentModal, setShowContentModal] = useState(false);
+    const [showTopicModal, setShowTopicModal] = useState(false);
     const [editingContent, setEditingContent] = useState(null);
 
     useEffect(() => {
@@ -58,6 +61,31 @@ const EditTopicPage = () => {
         }
     };
 
+    const handleSaveTopic = async (topicData) => {
+        try {
+            await CourseService.updateTopic(id, {
+                ...topicData,
+                module: topicData.module
+            });
+            const updatedTopic = await CourseService.getTopicById(id);
+            setTopicData(updatedTopic);
+            setShowTopicModal(false);
+        } catch (error) {
+            setError("Ошибка при сохранении темы");
+        }
+    };
+
+    const handleDeleteTopic = async () => {
+        if (window.confirm('Вы уверены, что хотите удалить эту тему?')) {
+            try {
+                await CourseService.deleteTopic(id);
+                navigate(`/teach/edit-course/${topicData.module}`);
+            } catch (error) {
+                setError("Ошибка при удалении темы");
+            }
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
@@ -84,16 +112,21 @@ const EditTopicPage = () => {
             }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h1 style={{ color: "#5A3E36" }}>{topicData?.name}</h1>
-                    <button
-                        className="btn"
-                        onClick={() => {
-                            setEditingContent(null);
-                            setShowContentModal(true);
-                        }}
-                        style={{ backgroundColor: "#5A3E36", color: "#fff" }}
-                    >
-                        Добавить материал
-                    </button>
+                    <div className="d-flex gap-2">
+                        <button
+                            className="btn"
+                            onClick={() => setShowTopicModal(true)}
+                            style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                        >
+                            Редактировать тему
+                        </button>
+                        <button
+                            className="btn btn-danger"
+                            onClick={handleDeleteTopic}
+                        >
+                            Удалить тему
+                        </button>
+                    </div>
                 </div>
 
                 <p className="mb-4">{topicData?.description}</p>
@@ -106,7 +139,19 @@ const EditTopicPage = () => {
 
                 <div className="card">
                     <div className="card-body">
-                        <h5 className="card-title mb-4">Материалы темы</h5>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h5 className="card-title mb-0">Материалы темы</h5>
+                            <button
+                                className="btn"
+                                onClick={() => {
+                                    setEditingContent(null);
+                                    setShowContentModal(true);
+                                }}
+                                style={{ backgroundColor: "#5A3E36", color: "#fff" }}
+                            >
+                                Добавить материал
+                            </button>
+                        </div>
                         {topicData?.contents && topicData.contents.length > 0 ? (
                             <div className="list-group">
                                 {topicData.contents.map(content => (
@@ -169,6 +214,18 @@ const EditTopicPage = () => {
                             setShowContentModal(false);
                             setEditingContent(null);
                         }}
+                    />
+                </Modal>
+
+                <Modal
+                    isOpen={showTopicModal}
+                    onClose={() => setShowTopicModal(false)}
+                    title="Редактировать тему"
+                >
+                    <TopicForm
+                        topic={topicData}
+                        onSave={handleSaveTopic}
+                        onCancel={() => setShowTopicModal(false)}
                     />
                 </Modal>
             </div>
