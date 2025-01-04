@@ -16,12 +16,63 @@ const Header = () => {
 
   const isProfilePage = location.pathname === "/userprofile";
 
+  const profileSection = (
+    <Link
+      to="/userprofile"
+      className="d-flex align-items-center text-decoration-none"
+      style={{
+        color: isProfilePage ? "#fff" : "#D2C4B3",
+        padding: "6px 12px",
+        borderRadius: "4px",
+        fontWeight: isProfilePage ? "500" : "normal"
+      }}
+    >
+      <span className="me-2">{userData?.fio}</span>
+      {userData?.image && (
+        <img
+          src={userData.image}
+          alt="User Avatar"
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            objectFit: "cover"
+          }}
+        />
+      )}
+    </Link>
+  );
+
+  const authButtons = (
+    <>
+      <Link
+        to="/login"
+        className="btn me-2"
+        style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+      >
+        Войти
+      </Link>
+      <Link
+        to="/register"
+        className="btn"
+        style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+      >
+        Регистрация
+      </Link>
+    </>
+  );
+
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="header-wrapper">
         <Link className="navbar-brand" to="/" style={{ color: "#fff", fontWeight: "600" }}>
           EduFlex
         </Link>
+        {isAuthenticated && (
+          <div className="d-flex d-lg-none align-items-center">
+            {profileSection}
+          </div>
+        )}
         <button
           className="navbar-toggler"
           type="button"
@@ -88,50 +139,8 @@ const Header = () => {
               </Link>
             </li>
           </ul>
-          <div className="d-flex align-items-center">
-            {isAuthenticated ? (
-              <Link
-                to="/userprofile"
-                className="d-flex align-items-center text-decoration-none"
-                style={{
-                  color: isProfilePage ? "#fff" : "#D2C4B3",
-                  padding: "6px 12px",
-                  borderRadius: "4px",
-                  fontWeight: isProfilePage ? "500" : "normal"
-                }}
-              >
-                <span className="me-2">{userData?.fio}</span>
-                {userData?.image && (
-                  <img
-                    src={userData.image}
-                    alt="User Avatar"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      objectFit: "cover"
-                    }}
-                  />
-                )}
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="btn me-2"
-                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
-                >
-                  Войти
-                </Link>
-                <Link
-                  to="/register"
-                  className="btn"
-                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
-                >
-                  Регистрация
-                </Link>
-              </>
-            )}
+          <div className="d-none d-lg-flex align-items-center">
+            {isAuthenticated ? profileSection : authButtons}
           </div>
         </div>
       </div>
