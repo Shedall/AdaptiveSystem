@@ -58,10 +58,20 @@ const RegisterPage = () => {
       }
 
       const response = await userService.register(data);
+
+      if (!response || !response.token || !response.user) {
+        throw new Error('Ошибка при регистрации');
+      }
+
       auth.login(response.token, response.user);
+
+      if (!auth.isAuthenticated()) {
+        throw new Error('Ошибка авторизации');
+      }
+
       navigate("/");
     } catch (error) {
-      setError(error.detail || "Ошибка при регистрации");
+      setError(error.detail || error.message || "Ошибка при регистрации");
     } finally {
       setIsLoading(false);
     }

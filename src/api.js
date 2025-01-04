@@ -61,7 +61,17 @@ export const userService = {
       method: 'POST',
       body: formData,
     });
-    return handleErrors(response);
+    const data = await handleErrors(response);
+
+    return {
+      token: data.access_token || data.token,
+      user: data.user || {
+        id: data.id,
+        email: data.email,
+        fio: data.fio,
+        image: data.image
+      }
+    };
   },
 
   aboutme: async () => {
