@@ -6,43 +6,47 @@ import { CourseService } from "../api";
 
 const CourseListItem = ({ course, categoryName }) => {
   return (
-    <div className="card mb-3">
-      <div className="row g-0 align-items-center">
-        <div className="col-2">
-          <img
-            src={course.image || '/placeholder.png'}
-            alt={course.name}
-            className="img-fluid rounded-start"
-            style={{ 
-              width: "100px", 
-              height: "100px", 
-              objectFit: "cover",
-              padding: "10px" 
-            }}
-            onError={(e) => {
-              e.target.src = '/placeholder.png';
-            }}
-          />
-        </div>
-        <div className="col-10">
-          <div className="card-body">
-            <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <span className="text-muted">Категория: {categoryName || 'Без категории'}</span>
+    <Link
+      to={`/teach/edit-course/${course.id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      <div className="card mb-3">
+        <div className="row g-0 align-items-center">
+          <div className="col-2">
+            <img
+              src={course.image || '/placeholder.png'}
+              alt={course.name}
+              className="img-fluid rounded-start"
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "cover",
+                padding: "10px"
+              }}
+              onError={(e) => {
+                e.target.src = '/placeholder.png';
+              }}
+            />
+          </div>
+          <div className="col-10">
+            <div className="card-body">
+              <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <span className="text-muted">Категория: {categoryName || 'Без категории'}</span>
+                </div>
+                <span
+                  className={`badge ${course.status === "Опубликован" ? "bg-success" : "bg-warning"
+                    }`}
+                >
+                  {course.status}
+                </span>
               </div>
-              <span 
-                className={`badge ${
-                  course.status === "Опубликован" ? "bg-success" : "bg-warning"
-                }`}
-              >
-                {course.status}
-              </span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -62,7 +66,7 @@ const TeachPage = () => {
           CourseService.getMyCourses(),
           CourseService.getCategories()
         ]);
-        
+
         setCourses(coursesResponse.results);
         setCategories(categoriesResponse.results);
       } catch (error) {
@@ -113,9 +117,9 @@ const TeachPage = () => {
         ) : courses.length > 0 ? (
           <div className="courses-list">
             {courses.map(course => (
-              <CourseListItem 
-                key={course.id} 
-                course={course} 
+              <CourseListItem
+                key={course.id}
+                course={course}
                 categoryName={getCategoryName(course.category)}
               />
             ))}

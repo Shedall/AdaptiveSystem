@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../auth';
 
@@ -7,72 +7,95 @@ const Header = () => {
   const location = useLocation();
   const userData = JSON.parse(localStorage.getItem('userData'));
   const isAuthenticated = localStorage.getItem('accessToken');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Для управления модальным окном
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
 
   const handleLogout = () => {
     auth.logout();
     navigate('/login');
   };
 
-  const isActivePath = (path) => {
-    return location.pathname === path;
-  };
+  const isActivePath = (path) => location.pathname === path;
+  const isAuthOrRegisterPage = location.pathname === '/login' || location.pathname === '/register';
 
   const linkStyle = (path) => ({
     color: '#5A3E36',
     textDecoration: 'none',
     borderBottom: isActivePath(path) ? '2px solid #5A3E36' : 'none',
     paddingBottom: '3px',
+    whiteSpace: 'nowrap'
   });
 
-  // Проверяем, находится ли пользователь на страницах /login или /register
-  const isAuthOrRegisterPage = location.pathname === '/login' || location.pathname === '/register';
+  const renderNavLinks = () => (
+    <>
+      <Link to="/courses" className="me-3" style={linkStyle('/courses')}>
+        Каталог курсов
+      </Link>
+      <Link to="/about" className="me-3" style={linkStyle('/about')}>
+        О нас
+      </Link>
+      {isAuthenticated && (
+        <>
+          <Link to="/courses/my" className="me-3" style={linkStyle('/courses/my')}>
+            Мои курсы
+          </Link>
+          <Link to="/teach" style={linkStyle('/teach')}>
+            Преподавание
+          </Link>
+        </>
+      )}
+    </>
+  );
 
   return (
     <>
-      <header className="shadow-sm" style={{ backgroundColor: '#fff' }}>
-        <div className="container">
-          <div className="d-flex justify-content-between align-items-center py-3">
+      <header style={{
+        backgroundColor: '#fff',
+        borderBottom: '1px solid #eee',
+        position: 'relative'
+      }}>
+        <div style={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          padding: '15px 20px',
+          width: '100%'
+        }}>
+          <div className="d-flex justify-content-between align-items-center" style={{ minHeight: '50px' }}>
             <div className="d-flex align-items-center">
               <Link to="/" style={{ textDecoration: 'none' }}>
-                <h1 className="m-0 me-4" style={{ color: '#5A3E36', fontSize: '24px' }}>EduFlex</h1>
+                <h1 className="m-0 me-4" style={{
+                  color: '#5A3E36',
+                  fontSize: '24px',
+                  lineHeight: '1.2'
+                }}>EduFlex</h1>
               </Link>
 
-              {/* Navigation Links */}
-              <nav className="d-flex align-items-center">
-                <Link
-                  to="/courses"
-                  className="me-3"
-                  style={linkStyle('/courses')}
+              {!isMobile && <nav className="d-flex align-items-center">{renderNavLinks()}</nav>}
+
+              {isMobile && (
+                <button
+                  className="btn"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    fontSize: '24px',
+                    padding: '8px 12px',
+                    lineHeight: '1'
+                  }}
                 >
-                  Каталог курсов
-                </Link>
-                <Link
-                  to="/about"
-                  className="me-3"
-                  style={linkStyle('/about')}
-                >
-                  О нас
-                </Link>
-                {isAuthenticated && (
-                  <>
-                    <Link
-                      to="/courses/my"
-                      className="me-3"
-                      style={linkStyle('/courses/my')}
-                    >
-                      Мои курсы
-                    </Link>
-                    <Link
-                      to="/teach"
-                      style={linkStyle('/teach')}
-                    >
-                      Преподавание
-                    </Link>
-                  </>
-                )}
-              </nav>
+                  ☰
+                </button>
+              )}
             </div>
 
             <div className="d-flex align-items-center">
@@ -92,51 +115,69 @@ const Header = () => {
                         src={userData.image}
                         alt="Фото профиля"
                         className="rounded-circle me-2"
-                        style={{ width: "40px", height: "40px", objectFit: "cover", cursor: "pointer" }}
+                        style={{ width: "40px", height: "40px", objectFit: "cover" }}
                       />
                     )}
-                    <span style={{ color: '#5A3E36', cursor: "pointer" }}>{userData?.fio}</span>
+                    {!isMobile && <span style={{ color: '#5A3E36' }}>{userData?.fio}</span>}
                   </Link>
                   <button
-                    onClick={() => setShowLogoutModal(true)} // Открываем модальное окно
+                    onClick={() => setShowLogoutModal(true)}
                     className="btn"
-                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", borderRadius: "5px", border: "none" }}
+                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", border: "none" }}
                   >
-                    Выйти
+                    {isMobile ? "×" : "Выйти"}
                   </button>
                 </>
               ) : (
-                // Скрываем кнопки "Войти" и "Регистрация" на страницах /login и /register
                 !isAuthOrRegisterPage && (
                   <div>
                     <Link to="/login">
-                      <button
-                        className="btn me-2"
-                        style={{ backgroundColor: "#5A3E36", color: "#fff", borderRadius: "5px", border: "none" }}
-                      >
-                        Войти
+                      <button className="btn me-2" style={{ backgroundColor: "#5A3E36", color: "#fff", border: "none" }}>
+                        {isMobile ? "→" : "Войти"}
                       </button>
                     </Link>
-                    <Link to="/register">
-                      <button
-                        className="btn"
-                        style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", borderRadius: "5px", border: "none" }}
-                      >
-                        Регистрация
-                      </button>
-                    </Link>
+                    {!isMobile && (
+                      <Link to="/register">
+                        <button className="btn" style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", border: "none" }}>
+                          Регистрация
+                        </button>
+                      </Link>
+                    )}
                   </div>
                 )
               )}
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {isMobile && isMobileMenuOpen && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              backgroundColor: '#fff',
+              padding: '15px 20px',
+              borderTop: '1px solid #eee',
+              zIndex: 1000,
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}>
+              <nav className="d-flex flex-column gap-3">
+                {renderNavLinks()}
+                {!isAuthenticated && !isAuthOrRegisterPage && (
+                  <Link to="/register" style={linkStyle('/register')}>
+                    Регистрация
+                  </Link>
+                )}
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Модальное окно для подтверждения выхода */}
+      {/* Logout Modal - unchanged */}
       {showLogoutModal && (
-        <div
-          className="modal d-flex justify-content-center align-items-center"
+        <div className="modal d-flex justify-content-center align-items-center"
           style={{
             position: "fixed",
             top: 0,
@@ -147,12 +188,11 @@ const Header = () => {
             zIndex: 1050,
           }}
         >
-          <div
-            className="modal-content p-4"
+          <div className="modal-content p-4"
             style={{
               backgroundColor: "#fff",
               borderRadius: "10px",
-              width: "400px",
+              width: isMobile ? "90%" : "400px",
               textAlign: "center",
             }}
           >
@@ -166,7 +206,7 @@ const Header = () => {
                 Да, хочу выйти
               </button>
               <button
-                onClick={() => setShowLogoutModal(false)} // Закрываем окно
+                onClick={() => setShowLogoutModal(false)}
                 className="btn btn-secondary"
                 style={{ width: "45%" }}
               >
