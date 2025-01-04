@@ -208,6 +208,52 @@ export const CourseService = {
     );
     return handleErrors(response);
   },
+
+  createContent: async (contentData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/contents/`,
+      {
+        method: 'POST',
+        headers: getHeaders(false),
+        body: contentData,
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateContent: async (id, contentData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/contents/${id}/`,
+      {
+        method: 'PUT',
+        headers: getHeaders(false),
+        body: contentData,
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteContent: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/contents/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getTopicById: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/topics/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;

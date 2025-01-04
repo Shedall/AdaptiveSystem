@@ -14,6 +14,7 @@ import { auth } from "./auth";
 import "./styles/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EditCoursePage from "./pages/EditCoursePage";
+import EditTopicPage from "./pages/EditTopicPage";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = auth.isAuthenticated();
@@ -72,6 +73,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <EditCoursePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/teach/edit-topic/:id"
+          element={
+            <PrivateRoute>
+              <EditTopicPage />
             </PrivateRoute>
           }
         />
