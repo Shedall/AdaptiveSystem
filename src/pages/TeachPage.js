@@ -3,70 +3,27 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { CourseService } from "../api";
-
-const CourseListItem = ({ course, categoryName }) => {
-  return (
-    <Link
-      to={`/teach/edit-course/${course.id}`}
-      style={{ textDecoration: 'none', color: 'inherit' }}
-    >
-      <div className="card mb-3">
-        <div className="row g-0 align-items-center">
-          <div className="col-2">
-            <img
-              src={course.image || '/placeholder.png'}
-              alt={course.name}
-              className="img-fluid rounded-start"
-              style={{
-                width: "100px",
-                height: "100px",
-                objectFit: "cover",
-                padding: "10px"
-              }}
-              onError={(e) => {
-                e.target.src = '/placeholder.png';
-              }}
-            />
-          </div>
-          <div className="col-10">
-            <div className="card-body">
-              <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <span className="text-muted">Категория: {categoryName || 'Без категории'}</span>
-                </div>
-                <span
-                  className={`badge ${course.status === "Опубликован" ? "bg-success" : "bg-warning"
-                    }`}
-                >
-                  {course.status}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-};
+import Modal from "../components/Modal";
+import CourseForm from "../components/course-edit/CourseForm";
+import IconButton from "../components/IconButton";
 
 const TeachPage = () => {
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Fetch both courses and categories
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      setError(null);
+      setError(null); // Reset error state
       try {
         const [coursesResponse, categoriesResponse] = await Promise.all([
           CourseService.getMyCourses(),
           CourseService.getCategories()
         ]);
-
         setCourses(coursesResponse.results);
         setCategories(categoriesResponse.results);
       } catch (error) {
@@ -80,6 +37,18 @@ const TeachPage = () => {
     fetchData();
   }, []);
 
+  const handleCreateCourse = async (formData) => {
+    try {
+      await CourseService.createCourse(formData);
+      const updatedCourses = await CourseService.getMyCourses();
+      setCourses(updatedCourses.results);
+      setShowCreateModal(false);
+    } catch (error) {
+      console.error('Error creating course:', error);
+      setError(error.detail || "Ошибка при создании курса");
+    }
+  };
+
   // Helper function to get category name by id
   const getCategoryName = (categoryId) => {
     const category = categories.find(cat => cat.id === categoryId);
@@ -89,17 +58,20 @@ const TeachPage = () => {
   return (
     <div style={{ backgroundColor: "#F7F3EF", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
-      <div className="container flex-grow-1 py-5">
+      <div style={{
+        flex: "1",
+        padding: "20px",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        width: "100%"
+      }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 style={{ color: "#5A3E36" }}>Преподавание</h1>
-          <Link to="/teach/create-course">
-            <button
-              className="btn"
-              style={{ backgroundColor: "#5A3E36", color: "#fff", borderRadius: "5px", border: "none" }}
-            >
-              Добавить курс
-            </button>
-          </Link>
+          <IconButton
+            icon="add_icon.svg"
+            text="Создать курс"
+            onClick={() => setShowCreateModal(true)}
+          />
         </div>
 
         {error && (
@@ -115,20 +87,67 @@ const TeachPage = () => {
             </div>
           </div>
         ) : courses.length > 0 ? (
-          <div className="courses-list">
+          <div className="row row-cols-1 row-cols-md-2 g-4">
             {courses.map(course => (
-              <CourseListItem
-                key={course.id}
-                course={course}
-                categoryName={getCategoryName(course.category)}
-              />
+              <div key={course.id} className="col">
+                <Link
+                  to={`/teach/edit-course/${course.id}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div className="card h-100">
+                    <div className="row g-0 h-100">
+                      <div className="col-4">
+                        <img
+                          src={course.image || '/placeholder.png'}
+                          alt={course.name}
+                          className="img-fluid rounded-start h-100"
+                          style={{ objectFit: "cover" }}
+                          onError={(e) => {
+                            e.target.src = '/placeholder.png';
+                          }}
+                        />
+                      </div>
+                      <div className="col-8">
+                        <div className="card-body d-flex flex-column h-100">
+                          <div className="d-flex justify-content-between align-items-start">
+                            <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
+                            <span
+                              className={`badge ${course.status === "Опубликован" ? "bg-success" : "bg-warning"}`}
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              {course.status || 'Черновик'}
+                            </span>
+                          </div>
+                          <p className="card-text text-muted mb-2">{course.description}</p>
+                          <div className="mt-auto">
+                            <small className="text-muted">
+                              {getCategoryName(course.category) || 'Без категории'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-muted">
-            <p>У вас пока нет созданных курсов</p>
+          <div className="text-center p-5" style={{ color: "#5A3E36" }}>
+            <p>У вас пока нет созданных курсов. Создайте свой первый курс, нажав кнопку "Создать курс".</p>
           </div>
         )}
+
+        <Modal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          title="Создать новый курс"
+        >
+          <CourseForm
+            onSave={handleCreateCourse}
+            onCancel={() => setShowCreateModal(false)}
+          />
+        </Modal>
       </div>
       <Footer />
     </div>

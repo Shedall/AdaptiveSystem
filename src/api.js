@@ -254,6 +254,17 @@ export const CourseService = {
     );
     return handleErrors(response);
   },
+
+  getTeachCourses: async () => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/my/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;

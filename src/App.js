@@ -7,7 +7,6 @@ import RegisterPage from "./pages/RegisterPage";
 import CoursesPage from "./pages/CoursesPage";
 import MyCoursesPage from "./pages/MyCoursesPage";
 import TeachPage from "./pages/TeachPage";
-import CreateCoursePage from "./pages/CreateCoursePage"
 import UserInfoPage from "./pages/AboutMePage";
 import AboutPage from "./pages/AboutPage";
 import { auth } from "./auth";
@@ -49,14 +48,6 @@ const App = () => {
           element={
             <PrivateRoute>
               <TeachPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/teach/create-course"
-          element={
-            <PrivateRoute>
-              <CreateCoursePage />
             </PrivateRoute>
           }
         />
