@@ -129,17 +129,19 @@ const AboutMePage = () => {
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4 text-center">
-                    <img
-                      src={imagePreview || userData?.image || "/avatar-placeholder.png"}
-                      alt="Profile"
-                      style={{
-                        width: "150px",
-                        height: "150px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginBottom: "1rem"
-                      }}
-                    />
+                    {(imagePreview || userData?.image) && (
+                      <img
+                        src={imagePreview || userData?.image}
+                        alt="Profile"
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          marginBottom: "1rem"
+                        }}
+                      />
+                    )}
                     <div>
                       <input
                         type="file"
@@ -153,7 +155,7 @@ const AboutMePage = () => {
                         className="btn"
                         style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
                       >
-                        Изменить фото
+                        {imagePreview || userData?.image ? "Изменить фото" : "Добавить фото"}
                       </label>
                     </div>
                   </div>

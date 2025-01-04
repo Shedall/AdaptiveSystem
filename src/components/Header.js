@@ -101,16 +101,18 @@ const Header = () => {
                 }}
               >
                 <span className="me-2">{userData?.fio}</span>
-                <img
-                  src="/avatar-placeholder.png"
-                  alt="User Avatar"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    objectFit: "cover"
-                  }}
-                />
+                {userData?.image && (
+                  <img
+                    src={userData.image}
+                    alt="User Avatar"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      objectFit: "cover"
+                    }}
+                  />
+                )}
               </Link>
             ) : (
               <>
