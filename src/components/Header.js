@@ -1,222 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { auth } from '../auth';
+import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { auth } from "../auth";
+import './Header.css';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userData = JSON.parse(localStorage.getItem('userData'));
-  const isAuthenticated = localStorage.getItem('accessToken');
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const isMobile = windowWidth < 768;
+  const isAuthenticated = auth.isAuthenticated();
+  const userData = auth.getUserData();
 
   const handleLogout = () => {
     auth.logout();
-    navigate('/login');
+    navigate("/login");
   };
 
-  const isActivePath = (path) => location.pathname === path;
-  const isAuthOrRegisterPage = location.pathname === '/login' || location.pathname === '/register';
-
-  const linkStyle = (path) => ({
-    color: '#5A3E36',
-    textDecoration: 'none',
-    borderBottom: isActivePath(path) ? '2px solid #5A3E36' : 'none',
-    paddingBottom: '3px',
-    whiteSpace: 'nowrap'
-  });
-
-  const renderNavLinks = () => (
-    <>
-      <Link to="/courses" className="me-3" style={linkStyle('/courses')}>
-        Каталог курсов
-      </Link>
-      <Link to="/about" className="me-3" style={linkStyle('/about')}>
-        О нас
-      </Link>
-      {isAuthenticated && (
-        <>
-          <Link to="/courses/my" className="me-3" style={linkStyle('/courses/my')}>
-            Мои курсы
-          </Link>
-          <Link to="/teach" style={linkStyle('/teach')}>
-            Преподавание
-          </Link>
-        </>
-      )}
-    </>
-  );
+  const isProfilePage = location.pathname === "/userprofile";
 
   return (
-    <>
-      <header style={{
-        backgroundColor: '#fff',
-        borderBottom: '1px solid #eee',
-        position: 'relative'
-      }}>
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '15px 20px',
-          width: '100%'
-        }}>
-          <div className="d-flex justify-content-between align-items-center" style={{ minHeight: '50px' }}>
-            <div className="d-flex align-items-center">
-              <Link to="/" style={{ textDecoration: 'none' }}>
-                <h1 className="m-0 me-4" style={{
-                  color: '#5A3E36',
-                  fontSize: '24px',
-                  lineHeight: '1.2'
-                }}>EduFlex</h1>
+    <nav className="navbar navbar-expand-lg">
+      <div className="header-wrapper">
+        <Link className="navbar-brand" to="/" style={{ color: "#fff", fontWeight: "600" }}>
+          EduFlex
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav me-auto">
+            <li className="nav-item">
+              <Link
+                className="nav-link"
+                to="/courses"
+                style={{
+                  color: location.pathname === '/courses' ? "#fff" : "#D2C4B3",
+                  fontWeight: location.pathname === '/courses' ? "500" : "normal"
+                }}
+              >
+                Каталог курсов
               </Link>
-
-              {!isMobile && <nav className="d-flex align-items-center">{renderNavLinks()}</nav>}
-
-              {isMobile && (
-                <button
-                  className="btn"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    fontSize: '24px',
-                    padding: '8px 12px',
-                    lineHeight: '1'
-                  }}
-                >
-                  ☰
-                </button>
-              )}
-            </div>
-
-            <div className="d-flex align-items-center">
-              {isAuthenticated ? (
-                <>
+            </li>
+            {isAuthenticated && (
+              <>
+                <li className="nav-item">
                   <Link
-                    to="/userprofile"
-                    className="d-flex align-items-center me-3"
+                    className="nav-link"
+                    to="/courses/my"
                     style={{
-                      textDecoration: 'none',
-                      borderBottom: isActivePath('/userprofile') ? '2px solid #5A3E36' : 'none',
-                      paddingBottom: '3px',
+                      color: location.pathname === '/courses/my' ? "#fff" : "#D2C4B3",
+                      fontWeight: location.pathname === '/courses/my' ? "500" : "normal"
                     }}
                   >
-                    {userData?.image && (
-                      <img
-                        src={userData.image}
-                        alt="Фото профиля"
-                        className="rounded-circle me-2"
-                        style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                      />
-                    )}
-                    {!isMobile && <span style={{ color: '#5A3E36' }}>{userData?.fio}</span>}
+                    Мои курсы
                   </Link>
-                  <button
-                    onClick={() => setShowLogoutModal(true)}
-                    className="btn"
-                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", border: "none" }}
+                </li>
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    to="/teach"
+                    style={{
+                      color: location.pathname === '/teach' ? "#fff" : "#D2C4B3",
+                      fontWeight: location.pathname === '/teach' ? "500" : "normal"
+                    }}
                   >
-                    {isMobile ? "×" : "Выйти"}
-                  </button>
-                </>
-              ) : (
-                !isAuthOrRegisterPage && (
-                  <div>
-                    <Link to="/login">
-                      <button className="btn me-2" style={{ backgroundColor: "#5A3E36", color: "#fff", border: "none" }}>
-                        {isMobile ? "→" : "Войти"}
-                      </button>
-                    </Link>
-                    {!isMobile && (
-                      <Link to="/register">
-                        <button className="btn" style={{ backgroundColor: "#D2C4B3", color: "#5A3E36", border: "none" }}>
-                          Регистрация
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMobile && isMobileMenuOpen && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              right: 0,
-              backgroundColor: '#fff',
-              padding: '15px 20px',
-              borderTop: '1px solid #eee',
-              zIndex: 1000,
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-            }}>
-              <nav className="d-flex flex-column gap-3">
-                {renderNavLinks()}
-                {!isAuthenticated && !isAuthOrRegisterPage && (
-                  <Link to="/register" style={linkStyle('/register')}>
-                    Регистрация
+                    Преподавание
                   </Link>
-                )}
-              </nav>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* Logout Modal - unchanged */}
-      {showLogoutModal && (
-        <div className="modal d-flex justify-content-center align-items-center"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 1050,
-          }}
-        >
-          <div className="modal-content p-4"
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "10px",
-              width: isMobile ? "90%" : "400px",
-              textAlign: "center",
-            }}
-          >
-            <h5 style={{ marginBottom: "20px" }}>Вы действительно хотите выйти?</h5>
-            <div className="d-flex justify-content-between">
-              <button
-                onClick={handleLogout}
-                className="btn btn-danger"
-                style={{ width: "45%" }}
+                </li>
+              </>
+            )}
+            <li className="nav-item">
+              <Link
+                className="nav-link"
+                to="/about"
+                style={{
+                  color: location.pathname === '/about' ? "#fff" : "#D2C4B3",
+                  fontWeight: location.pathname === '/about' ? "500" : "normal"
+                }}
               >
-                Да, хочу выйти
-              </button>
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="btn btn-secondary"
-                style={{ width: "45%" }}
-              >
-                Нет, остаюсь
-              </button>
-            </div>
+                О нас
+              </Link>
+            </li>
+          </ul>
+          <div className="d-flex align-items-center">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/userprofile"
+                  className="d-flex align-items-center text-decoration-none me-3"
+                  style={{
+                    color: isProfilePage ? "#fff" : "#D2C4B3",
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    fontWeight: isProfilePage ? "500" : "normal"
+                  }}
+                >
+                  <span className="me-2">{userData?.fio}</span>
+                  <img
+                    src="/avatar-placeholder.png"
+                    alt="User Avatar"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      objectFit: "cover"
+                    }}
+                  />
+                </Link>
+                <button
+                  className="btn"
+                  onClick={handleLogout}
+                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                >
+                  Выйти
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="btn me-2"
+                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                >
+                  Войти
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn"
+                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                >
+                  Регистрация
+                </Link>
+              </>
+            )}
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </nav>
   );
 };
 
