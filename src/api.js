@@ -24,10 +24,9 @@ const handleErrors = async (response) => {
 // Генерация заголовков
 const getHeaders = (isJSON = true) => {
   const headers = {};
-  const token = localStorage.getItem("accessToken"); // Токен из localStorage
-  console.log("Token", token);
+  const token = localStorage.getItem("accessToken");
   if (token) {
-    headers["Authorization"] = `Token ${token}`; // Используем формат Token
+    headers["Authorization"] = `Token ${token}`;
   }
   if (isJSON) {
     headers["Content-Type"] = "application/json";
@@ -43,7 +42,17 @@ export const userService = {
       headers: getHeaders(),
       body: JSON.stringify(credentials),
     });
-    return handleErrors(response);
+    const data = await handleErrors(response);
+
+    return {
+      token: data.access_token || data.token,
+      user: data.user || {
+        id: data.id,
+        email: data.email,
+        fio: data.fio,
+        image: data.image
+      }
+    };
   },
 
   // Регистрация пользователя
