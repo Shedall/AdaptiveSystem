@@ -2,7 +2,13 @@ export const auth = {
     // Get user data
     getUserData: () => {
         const userData = localStorage.getItem('userData');
-        return userData ? JSON.parse(userData) : null;
+        if (!userData) return null;
+        try {
+            return JSON.parse(userData);
+        } catch (e) {
+            localStorage.removeItem('userData'); // Clear invalid data
+            return null;
+        }
     },
 
     // Get token
@@ -20,4 +26,17 @@ export const auth = {
         localStorage.removeItem('userData');
         localStorage.removeItem('accessToken');
     },
+
+    // Login
+    login: (token, user) => {
+        if (!token || !user) return;
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("userData", JSON.stringify(user));
+    },
+
+    // Update user data
+    updateUserData: (userData) => {
+        if (!userData) return;
+        localStorage.setItem("userData", JSON.stringify(userData));
+    }
 };

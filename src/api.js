@@ -24,10 +24,9 @@ const handleErrors = async (response) => {
 // Генерация заголовков
 const getHeaders = (isJSON = true) => {
   const headers = {};
-  const token = localStorage.getItem("accessToken"); // Токен из localStorage
-  console.log("Token", token);
+  const token = localStorage.getItem("accessToken");
   if (token) {
-    headers["Authorization"] = `Token ${token}`; // Используем формат Token
+    headers["Authorization"] = `Token ${token}`;
   }
   if (isJSON) {
     headers["Content-Type"] = "application/json";
@@ -43,7 +42,17 @@ export const userService = {
       headers: getHeaders(),
       body: JSON.stringify(credentials),
     });
-    return handleErrors(response);
+    const data = await handleErrors(response);
+
+    return {
+      token: data.access_token || data.token,
+      user: data.user || {
+        id: data.id,
+        email: data.email,
+        fio: data.fio,
+        image: data.image
+      }
+    };
   },
 
   // Регистрация пользователя
@@ -52,7 +61,17 @@ export const userService = {
       method: 'POST',
       body: formData,
     });
-    return handleErrors(response);
+    const data = await handleErrors(response);
+
+    return {
+      token: data.access_token || data.token,
+      user: data.user || {
+        id: data.id,
+        email: data.email,
+        fio: data.fio,
+        image: data.image
+      }
+    };
   },
 
   aboutme: async () => {
@@ -63,13 +82,22 @@ export const userService = {
     return handleErrors(response);
   },
 
-  updatepassword: async (formData) => {
-    const response = await fetch(`${API_BASE_URL}/api/auth/update_password`, {
-      method: 'PUT',
-      headers: getHeaders(true),
-      body: JSON.stringify(formData),
-    });
-    return handleErrors(response);
+  updateProfile: async (formData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/auth/update_me`,
+      {
+        method: 'PUT',
+        headers: getHeaders(false),
+        body: formData,
+      }
+    );
+    const data = await handleErrors(response);
+    return {
+      id: data.id,
+      email: data.email,
+      fio: data.fio,
+      image: data.image
+    };
   },
 };
 
