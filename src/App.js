@@ -7,13 +7,13 @@ import RegisterPage from "./pages/RegisterPage";
 import CoursesPage from "./pages/CoursesPage";
 import MyCoursesPage from "./pages/MyCoursesPage";
 import TeachPage from "./pages/TeachPage";
-import CreateCoursePage from "./pages/CreateCoursePage"
 import UserInfoPage from "./pages/AboutMePage";
 import AboutPage from "./pages/AboutPage";
 import { auth } from "./auth";
 import "./styles/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EditCoursePage from "./pages/EditCoursePage";
+import EditTopicPage from "./pages/EditTopicPage";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = auth.isAuthenticated();
@@ -52,14 +52,6 @@ const App = () => {
           }
         />
         <Route
-          path="/teach/create-course"
-          element={
-            <PrivateRoute>
-              <CreateCoursePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
           path="/userprofile"
           element={
             <PrivateRoute>
@@ -72,6 +64,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <EditCoursePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/teach/edit-topic/:id"
+          element={
+            <PrivateRoute>
+              <EditTopicPage />
             </PrivateRoute>
           }
         />

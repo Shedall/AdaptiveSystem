@@ -181,6 +181,10 @@ const EditCoursePage = () => {
                         selectedModule={selectedModule}
                         editingTopic={editingTopic}
                         showTopicModal={showTopicModal}
+                        onTopicUpdate={async () => {
+                            const updatedCourse = await CourseService.getCourseById(id);
+                            setCourseData(updatedCourse);
+                        }}
                     />
 
                     <Modal
