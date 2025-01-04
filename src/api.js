@@ -63,12 +63,15 @@ export const userService = {
     return handleErrors(response);
   },
 
-  updatepassword: async (formData) => {
-    const response = await fetch(`${API_BASE_URL}/api/auth/update_password`, {
-      method: 'PUT',
-      headers: getHeaders(true),
-      body: JSON.stringify(formData),
-    });
+  updateProfile: async (formData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/auth/update_me`,
+      {
+        method: 'PUT',
+        headers: getHeaders(false),
+        body: formData,
+      }
+    );
     return handleErrors(response);
   },
 };

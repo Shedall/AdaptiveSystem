@@ -90,37 +90,28 @@ const Header = () => {
           </ul>
           <div className="d-flex align-items-center">
             {isAuthenticated ? (
-              <>
-                <Link
-                  to="/userprofile"
-                  className="d-flex align-items-center text-decoration-none me-3"
+              <Link
+                to="/userprofile"
+                className="d-flex align-items-center text-decoration-none"
+                style={{
+                  color: isProfilePage ? "#fff" : "#D2C4B3",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  fontWeight: isProfilePage ? "500" : "normal"
+                }}
+              >
+                <span className="me-2">{userData?.fio}</span>
+                <img
+                  src="/avatar-placeholder.png"
+                  alt="User Avatar"
                   style={{
-                    color: isProfilePage ? "#fff" : "#D2C4B3",
-                    padding: "6px 12px",
-                    borderRadius: "4px",
-                    fontWeight: isProfilePage ? "500" : "normal"
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    objectFit: "cover"
                   }}
-                >
-                  <span className="me-2">{userData?.fio}</span>
-                  <img
-                    src="/avatar-placeholder.png"
-                    alt="User Avatar"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      objectFit: "cover"
-                    }}
-                  />
-                </Link>
-                <button
-                  className="btn"
-                  onClick={handleLogout}
-                  style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
-                >
-                  Выйти
-                </button>
-              </>
+                />
+              </Link>
             ) : (
               <>
                 <Link
