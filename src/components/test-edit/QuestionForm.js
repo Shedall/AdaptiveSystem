@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'katex/dist/katex.min.css';
 import Latex from 'react-latex-next';
+import * as bootstrap from 'bootstrap';
 
 const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
     const [formData, setFormData] = useState({
@@ -9,6 +10,24 @@ const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
     });
     const [formError, setFormError] = useState("");
     const [showPreview, setShowPreview] = useState(false);
+
+    useEffect(() => {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Cleanup tooltips on unmount
+        return () => {
+            tooltipTriggerList.forEach(tooltipTriggerEl => {
+                const tooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+                if (tooltip) {
+                    tooltip.dispose();
+                }
+            });
+        };
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -68,7 +87,43 @@ const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
 
             <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                    <label className="form-label mb-0">Текст вопроса:</label>
+                    <div className="d-flex align-items-center gap-2">
+                        <label className="form-label mb-0">Текст вопроса:</label>
+                        <div className="position-relative" style={{ display: 'inline-block' }}>
+                            <img
+                                src="/icons/info_icon.svg"
+                                alt="Info"
+                                style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    cursor: 'help'
+                                }}
+                                data-bs-toggle="tooltip"
+                                data-bs-html="true"
+                                title="Для использования формул запишите их в формате LaTeX между знаками доллара, например: $x^2 + y^2 = z^2$"
+                            />
+                            <div
+                                className="position-absolute bg-white p-3 rounded shadow"
+                                style={{
+                                    display: 'none',
+                                    width: '300px',
+                                    zIndex: 1000,
+                                    top: '100%',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    border: '1px solid #dee2e6'
+                                }}
+                            >
+                                <p className="mb-2">Для использования формул запишите их в формате LaTeX между знаками доллара.</p>
+                                <p className="mb-2">Пример:</p>
+                                <pre className="bg-light p-2 rounded">$x^2 + y^2 = z^2$</pre>
+                                <p className="mb-0">Результат:</p>
+                                <div className="bg-light p-2 rounded">
+                                    <Latex>$x^2 + y^2 = z^2$</Latex>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <button
                         type="button"
                         className="btn"
