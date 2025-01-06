@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import 'katex/dist/katex.min.css';
+import Latex from 'react-latex-next';
 
 const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
     const [formData, setFormData] = useState({
@@ -6,6 +8,7 @@ const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
         answers: initialData?.answers || [{ text: '', is_right: false }]
     });
     const [formError, setFormError] = useState("");
+    const [showPreview, setShowPreview] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -64,59 +67,80 @@ const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
             )}
 
             <div className="mb-4">
-                <label className="form-label">Текст вопроса:</label>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                    <label className="form-label mb-0">Текст вопроса:</label>
+                    <button
+                        type="button"
+                        className="btn"
+                        onClick={() => setShowPreview(!showPreview)}
+                        style={{
+                            backgroundColor: showPreview ? "#5A3E36" : "#D2C4B3",
+                            color: showPreview ? "#fff" : "#5A3E36"
+                        }}
+                    >
+                        {showPreview ? "Скрыть предпросмотр" : "Показать предпросмотр"}
+                    </button>
+                </div>
                 <textarea
-                    className="form-control"
+                    className="form-control mb-2"
                     value={formData.text}
                     onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                     required
                 />
+                {showPreview && (
+                    <div className="card p-3 mb-2">
+                        <strong>Предпросмотр:</strong>
+                        <Latex>{formData.text}</Latex>
+                    </div>
+                )}
             </div>
 
             <div className="mb-4">
                 <label className="form-label mb-3">Ответы:</label>
                 {formData.answers.map((answer, index) => (
-                    <div key={index} className="d-flex gap-2 mb-2 align-items-center">
-                        <div className="form-check" style={{ marginRight: '8px' }}>
+                    <div key={index} className="mb-3">
+                        <div className="d-flex gap-2 mb-2 align-items-center">
+                            <div className="form-check" style={{ marginRight: '8px' }}>
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    checked={answer.is_right}
+                                    onChange={(e) => handleAnswerChange(index, 'is_right', e.target.checked)}
+                                />
+                            </div>
                             <input
-                                type="checkbox"
-                                className="form-check-input"
-                                checked={answer.is_right}
-                                onChange={(e) => handleAnswerChange(index, 'is_right', e.target.checked)}
+                                type="text"
+                                className="form-control"
+                                value={answer.text}
+                                onChange={(e) => handleAnswerChange(index, 'text', e.target.value)}
+                                placeholder="Введите ответ"
                             />
-                        </div>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={answer.text}
-                            onChange={(e) => handleAnswerChange(index, 'text', e.target.value)}
-                            placeholder="Введите ответ"
-                        />
-                        <button
-                            type="button"
-                            className="btn btn-danger"
-                            onClick={() => handleRemoveAnswer(index)}
-                            style={{
-                                width: '38px',
-                                height: '38px',
-                                padding: '6px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: '#dc3545',
-                                border: 'none'
-                            }}
-                        >
-                            <img
-                                src="/icons/delete_icon.svg"
-                                alt="Delete"
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => handleRemoveAnswer(index)}
                                 style={{
-                                    width: '20px',
-                                    height: '20px',
-                                    filter: 'brightness(0) invert(1)'
+                                    width: '38px',
+                                    height: '38px',
+                                    padding: '6px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#dc3545',
+                                    border: 'none'
                                 }}
-                            />
-                        </button>
+                            >
+                                <img
+                                    src="/icons/delete_icon.svg"
+                                    alt="Delete"
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        filter: 'brightness(0) invert(1)'
+                                    }}
+                                />
+                            </button>
+                        </div>
                     </div>
                 ))}
 

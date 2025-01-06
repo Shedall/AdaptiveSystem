@@ -1,5 +1,7 @@
 import React from 'react';
 import IconButton from '../IconButton';
+import 'katex/dist/katex.min.css';
+import Latex from 'react-latex-next';
 
 const QuestionList = ({
     questions,
@@ -18,7 +20,7 @@ const QuestionList = ({
                                     <span className="me-2" style={{ color: '#5A3E36' }}>
                                         {questions.findIndex(q => q.id === question.id) + 1}.
                                     </span>
-                                    {question.text}
+                                    <Latex>{question.text}</Latex>
                                 </h5>
                                 <div className="d-flex gap-2">
                                     <IconButton
@@ -43,7 +45,7 @@ const QuestionList = ({
                                             <span className={answer.is_right ? "text-success" : "text-danger"}>
                                                 {answer.is_right ? "✓" : "✗"}
                                             </span>
-                                            <span>{answer.text}</span>
+                                            <Latex>{answer.text}</Latex>
                                         </div>
                                     </div>
                                 ))}
