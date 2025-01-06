@@ -113,6 +113,28 @@ const EditCoursePage = () => {
         }
     };
 
+    const handleEditModule = (module) => {
+        setEditingModule(module);
+        setShowModuleModal(true);
+    };
+
+    const handleAddModule = () => {
+        setEditingModule({});
+        setShowModuleModal(true);
+    };
+
+    const handleAddTopic = (module) => {
+        setSelectedModule(module);
+        setEditingTopic({});
+        setShowTopicModal(true);
+    };
+
+    const handleEditTopic = (module, topic) => {
+        setSelectedModule(module);
+        setEditingTopic(topic);
+        setShowTopicModal(true);
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
@@ -158,33 +180,15 @@ const EditCoursePage = () => {
 
                     <ModuleList
                         modules={courseData.modules}
-                        onAddModule={() => {
-                            setEditingModule({});
-                            setShowModuleModal(true);
-                        }}
-                        onEditModule={(module) => {
-                            setEditingModule(module);
-                            setShowModuleModal(true);
-                        }}
+                        courseId={courseData.id}
+                        courseTests={courseData.tests}
+                        onEditModule={handleEditModule}
                         onDeleteModule={handleDeleteModule}
-                        onAddTopic={(module) => {
-                            setSelectedModule(module);
-                            setEditingTopic({});
-                            setShowTopicModal(true);
-                        }}
-                        onEditTopic={(module, topic) => {
-                            setSelectedModule(module);
-                            setEditingTopic(topic);
-                            setShowTopicModal(true);
-                        }}
+                        onAddTopic={handleAddTopic}
+                        onEditTopic={handleEditTopic}
                         onDeleteTopic={handleDeleteTopic}
-                        selectedModule={selectedModule}
-                        editingTopic={editingTopic}
-                        showTopicModal={showTopicModal}
-                        onTopicUpdate={async () => {
-                            const updatedCourse = await CourseService.getCourseById(id);
-                            setCourseData(updatedCourse);
-                        }}
+                        onAddModule={handleAddModule}
+                        onCourseUpdate={(updatedCourse) => setCourseData(updatedCourse)}
                     />
 
                     <Modal

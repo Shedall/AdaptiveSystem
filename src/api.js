@@ -250,12 +250,26 @@ export const CourseService = {
   },
 
   updateContent: async (id, contentData) => {
+    // Create a new FormData only if there are actual changes
+    const formData = new FormData();
+
+    // Only append fields that have values
+    if (contentData.get('label')) {
+      formData.append('label', contentData.get('label'));
+    }
+
+    // Only append file if it exists
+    const file = contentData.get('file');
+    if (file) {
+      formData.append('file', file);
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/api/contents/${id}/`,
       {
-        method: 'PUT',
+        method: 'PATCH',
         headers: getHeaders(false),
-        body: contentData,
+        body: formData,
       }
     );
     return handleErrors(response);
@@ -288,6 +302,148 @@ export const CourseService = {
       `${API_BASE_URL}/api/courses/my/`,
       {
         method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createModuleTest: async (testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/create_module_test/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createEntranceTest: async (testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/create_entrance_test/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateTest: async (id, testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteTest: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getTestById: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createQuestion: async (questionData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(questionData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateQuestion: async (id, questionData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(questionData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteQuestion: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getQuestion: async (id) => {
+    if (!id || isNaN(id)) {
+      throw new Error('Invalid question ID');
+    }
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createAnswer: async (answerData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(answerData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateAnswer: async (id, answerData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(answerData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteAnswer: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/${id}/`,
+      {
+        method: 'DELETE',
         headers: getHeaders(),
       }
     );
