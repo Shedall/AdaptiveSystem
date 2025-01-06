@@ -250,12 +250,26 @@ export const CourseService = {
   },
 
   updateContent: async (id, contentData) => {
+    // Create a new FormData only if there are actual changes
+    const formData = new FormData();
+
+    // Only append fields that have values
+    if (contentData.get('label')) {
+      formData.append('label', contentData.get('label'));
+    }
+
+    // Only append file if it exists
+    const file = contentData.get('file');
+    if (file) {
+      formData.append('file', file);
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/api/contents/${id}/`,
       {
-        method: 'PUT',
+        method: 'PATCH',
         headers: getHeaders(false),
-        body: contentData,
+        body: formData,
       }
     );
     return handleErrors(response);
