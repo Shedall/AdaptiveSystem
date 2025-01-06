@@ -171,6 +171,7 @@ const EditTestPage = () => {
     });
     const [showQuestionModal, setShowQuestionModal] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchTestData = async () => {
@@ -311,6 +312,24 @@ const EditTestPage = () => {
         }
     };
 
+    const filteredQuestions = questions.filter(question =>
+        question.text.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleClearAll = async () => {
+        if (window.confirm('Вы уверены, что хотите удалить все вопросы?')) {
+            try {
+                await Promise.all(questions.map(question =>
+                    CourseService.deleteQuestion(question.id)
+                ));
+                const updatedTest = await CourseService.getTestById(id);
+                setQuestions(updatedTest.questions || []);
+            } catch (error) {
+                setError(error.detail || "Ошибка при удалении вопросов");
+            }
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={{ backgroundColor: "#F7F3EF", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -349,51 +368,85 @@ const EditTestPage = () => {
 
                 {error && <div className="alert alert-danger mb-4">{error}</div>}
 
+                <div className="mb-4 position-relative">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Поиск вопросов..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button
+                            className="btn btn-link position-absolute"
+                            style={{
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                color: '#5A3E36',
+                                textDecoration: 'none'
+                            }}
+                            onClick={() => setSearchQuery('')}
+                        >
+                            Очистить
+                        </button>
+                    )}
+                </div>
+
                 {/* Questions list */}
-                {questions.map((question, index) => (
-                    <div key={question.id} className="card mb-4">
-                        <div className="card-body">
-                            <div className="d-flex justify-content-between align-items-start mb-3">
-                                <h5 className="card-title">
-                                    <span className="me-2" style={{ color: '#5A3E36' }}>
-                                        {index + 1}.
-                                    </span>
-                                    {question.text}
-                                </h5>
-                                <div className="d-flex gap-2">
-                                    <IconButton
-                                        icon="edit_icon.svg"
-                                        onClick={() => {
-                                            setEditingQuestion(question);
-                                            setShowQuestionModal(true);
-                                        }}
-                                        variant="secondary"
-                                        size="sm"
-                                    />
-                                    <IconButton
-                                        icon="delete_icon.svg"
-                                        onClick={() => handleDeleteQuestion(question.id)}
-                                        variant="danger"
-                                        size="sm"
-                                    />
+                {filteredQuestions.length > 0 ? (
+                    filteredQuestions.map((question) => (
+                        <div key={question.id} className="card mb-4">
+                            <div className="card-body">
+                                <div className="d-flex justify-content-between align-items-start mb-3">
+                                    <h5 className="card-title">
+                                        <span className="me-2" style={{ color: '#5A3E36' }}>
+                                            {questions.findIndex(q => q.id === question.id) + 1}.
+                                        </span>
+                                        {question.text}
+                                    </h5>
+                                    <div className="d-flex gap-2">
+                                        <IconButton
+                                            icon="edit_icon.svg"
+                                            onClick={() => {
+                                                setEditingQuestion(question);
+                                                setShowQuestionModal(true);
+                                            }}
+                                            variant="secondary"
+                                            size="sm"
+                                        />
+                                        <IconButton
+                                            icon="delete_icon.svg"
+                                            onClick={() => handleDeleteQuestion(question.id)}
+                                            variant="danger"
+                                            size="sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="list-group">
+                                    {question.answers.map(answer => (
+                                        <div key={answer.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div className="d-flex align-items-center gap-2">
+                                                <span className={answer.is_right ? "text-success" : "text-danger"}>
+                                                    {answer.is_right ? "✓" : "✗"}
+                                                </span>
+                                                <span>{answer.text}</span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-
-                            <div className="list-group">
-                                {question.answers.map(answer => (
-                                    <div key={answer.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                        <div className="d-flex align-items-center gap-2">
-                                            <span className={answer.is_right ? "text-success" : "text-danger"}>
-                                                {answer.is_right ? "✓" : "✗"}
-                                            </span>
-                                            <span>{answer.text}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
+                    ))
+                ) : (
+                    <div className="text-center p-4" style={{ color: "#5A3E36" }}>
+                        {questions.length > 0 ?
+                            "Нет вопросов, соответствующих поиску" :
+                            "В тесте пока нет вопросов. Создайте первый вопрос, нажав кнопку «Добавить вопрос»"
+                        }
                     </div>
-                ))}
+                )}
 
                 <Modal
                     isOpen={showQuestionModal}
