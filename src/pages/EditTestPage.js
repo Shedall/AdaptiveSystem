@@ -6,57 +6,71 @@ import { CourseService } from "../api";
 import Modal from '../components/Modal';
 import IconButton from '../components/IconButton';
 
-const QuestionForm = ({ onSave, onCancel, initialData }) => {
-    const [text, setText] = useState(initialData?.text || '');
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave({ text });
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-                <label className="form-label">Текст вопроса:</label>
-                <textarea
-                    className="form-control"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="d-flex gap-2">
-                <button type="submit" className="btn" style={{ backgroundColor: "#5A3E36", color: "#fff" }}>
-                    Сохранить
-                </button>
-                <button
-                    type="button"
-                    className="btn"
-                    onClick={onCancel}
-                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
-                >
-                    Отмена
-                </button>
-            </div>
-        </form>
-    );
-};
-
-const AnswerForm = ({ onSave, onCancel, initialData }) => {
+const QuestionForm = ({ onSave, onCancel, initialData = null }) => {
     const [formData, setFormData] = useState({
         text: initialData?.text || '',
-        is_right: initialData?.is_right || false,
+        answers: initialData?.answers || [{ text: '', is_right: false }]
     });
+    const [formError, setFormError] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        setFormError("");
+
+        // Filter out empty answers
+        const validAnswers = formData.answers.filter(a => a.text.trim() !== '');
+
+        // Validation
+        if (validAnswers.length < 2) {
+            setFormError('Необходимо добавить минимум 2 ответа');
+            return;
+        }
+
+        if (!validAnswers.some(answer => answer.is_right)) {
+            setFormError('Необходимо отметить хотя бы один правильный ответ');
+            return;
+        }
+
+        onSave({
+            text: formData.text,
+            answers: validAnswers
+        });
+    };
+
+    const handleAddAnswer = () => {
+        setFormData({
+            ...formData,
+            answers: [...formData.answers, { text: '', is_right: false }]
+        });
+    };
+
+    const handleAnswerChange = (index, field, value) => {
+        const newAnswers = [...formData.answers];
+        newAnswers[index] = { ...newAnswers[index], [field]: value };
+        setFormData({
+            ...formData,
+            answers: newAnswers
+        });
+    };
+
+    const handleRemoveAnswer = (index) => {
+        const newAnswers = formData.answers.filter((_, i) => i !== index);
+        setFormData({
+            ...formData,
+            answers: newAnswers
+        });
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-                <label className="form-label">Текст ответа:</label>
+            {formError && (
+                <div className="alert alert-danger mb-3">
+                    {formError}
+                </div>
+            )}
+
+            <div className="mb-4">
+                <label className="form-label">Текст вопроса:</label>
                 <textarea
                     className="form-control"
                     value={formData.text}
@@ -64,19 +78,71 @@ const AnswerForm = ({ onSave, onCancel, initialData }) => {
                     required
                 />
             </div>
-            <div className="mb-3 form-check">
-                <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="isRight"
-                    checked={formData.is_right}
-                    onChange={(e) => setFormData({ ...formData, is_right: e.target.checked })}
-                />
-                <label className="form-check-label" htmlFor="isRight">Правильный ответ</label>
+
+            <div className="mb-4">
+                <label className="form-label mb-3">Ответы:</label>
+                {formData.answers.map((answer, index) => (
+                    <div key={index} className="d-flex gap-2 mb-2 align-items-center">
+                        <div className="form-check" style={{ marginRight: '8px' }}>
+                            <input
+                                type="checkbox"
+                                className="form-check-input"
+                                checked={answer.is_right}
+                                onChange={(e) => handleAnswerChange(index, 'is_right', e.target.checked)}
+                            />
+                        </div>
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={answer.text}
+                            onChange={(e) => handleAnswerChange(index, 'text', e.target.value)}
+                            placeholder="Введите ответ"
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={() => handleRemoveAnswer(index)}
+                            style={{
+                                width: '38px',
+                                height: '38px',
+                                padding: '6px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#dc3545',
+                                border: 'none'
+                            }}
+                        >
+                            <img
+                                src="/icons/delete_icon.svg"
+                                alt="Delete"
+                                style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    filter: 'brightness(0) invert(1)'
+                                }}
+                            />
+                        </button>
+                    </div>
+                ))}
+
+                <button
+                    type="button"
+                    className="btn w-100 mt-3"
+                    onClick={handleAddAnswer}
+                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                >
+                    Добавить ответ
+                </button>
             </div>
-            <div className="d-flex gap-2">
-                <button type="submit" className="btn" style={{ backgroundColor: "#5A3E36", color: "#fff" }}>
-                    Сохранить
+
+            <div className="d-flex gap-2 mt-4">
+                <button
+                    type="submit"
+                    className="btn"
+                    style={{ backgroundColor: "#5A3E36", color: "#fff" }}
+                >
+                    {initialData ? "Обновить" : "Сохранить"}
                 </button>
                 <button
                     type="button"
@@ -97,11 +163,14 @@ const EditTestPage = () => {
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [isAddingQuestion, setIsAddingQuestion] = useState(false);
+    const [editingQuestionId, setEditingQuestionId] = useState(null);
+    const [newQuestion, setNewQuestion] = useState({
+        text: '',
+        answers: [{ text: '', is_right: false }]
+    });
     const [showQuestionModal, setShowQuestionModal] = useState(false);
-    const [showAnswerModal, setShowAnswerModal] = useState(false);
-    const [currentQuestion, setCurrentQuestion] = useState(null);
-    const [currentAnswer, setCurrentAnswer] = useState(null);
-    const [selectedQuestionId, setSelectedQuestionId] = useState(null);
+    const [editingQuestion, setEditingQuestion] = useState(null);
 
     useEffect(() => {
         const fetchTestData = async () => {
@@ -119,28 +188,52 @@ const EditTestPage = () => {
         fetchTestData();
     }, [id]);
 
-    const handleCreateQuestion = async (questionData) => {
-        try {
-            await CourseService.createQuestion({
-                ...questionData,
-                test: Number(id)
+    const handleAddAnswer = () => {
+        if (newQuestion.answers[newQuestion.answers.length - 1].text.trim() !== '') {
+            setNewQuestion({
+                ...newQuestion,
+                answers: [...newQuestion.answers, { text: '', is_right: false }]
             });
-            const updatedTest = await CourseService.getTestById(id);
-            setQuestions(updatedTest.questions || []);
-            setShowQuestionModal(false);
-        } catch (error) {
-            setError(error.detail || "Ошибка при создании вопроса");
         }
     };
 
-    const handleUpdateQuestion = async (questionId, questionData) => {
+    const handleAnswerChange = (index, field, value) => {
+        const updatedAnswers = [...newQuestion.answers];
+        updatedAnswers[index] = { ...updatedAnswers[index], [field]: value };
+        setNewQuestion({
+            ...newQuestion,
+            answers: updatedAnswers
+        });
+
+        // Add new field if this is the last one and it's not empty
+        if (index === updatedAnswers.length - 1 && value.trim() !== '') {
+            handleAddAnswer();
+        }
+    };
+
+    const handleCreateQuestion = async (formData) => {
         try {
-            await CourseService.updateQuestion(questionId, questionData);
+            // First create the question
+            const questionResponse = await CourseService.createQuestion({
+                text: formData.text,
+                test: Number(id)
+            });
+
+            // Then create all answers
+            await Promise.all(formData.answers.map(answer =>
+                CourseService.createAnswer({
+                    ...answer,
+                    question: questionResponse.id
+                })
+            ));
+
+            // Refresh the test data
             const updatedTest = await CourseService.getTestById(id);
             setQuestions(updatedTest.questions || []);
             setShowQuestionModal(false);
+            setEditingQuestion(null);
         } catch (error) {
-            setError(error.detail || "Ошибка при обновлении вопроса");
+            setError(error.detail || "Ошибка при создании вопроса");
         }
     };
 
@@ -156,28 +249,53 @@ const EditTestPage = () => {
         }
     };
 
-    const handleCreateAnswer = async (answerData) => {
-        try {
-            await CourseService.createAnswer({
-                ...answerData,
-                question: selectedQuestionId
-            });
-            const updatedTest = await CourseService.getTestById(id);
-            setQuestions(updatedTest.questions || []);
-            setShowAnswerModal(false);
-        } catch (error) {
-            setError(error.detail || "Ошибка при создании ответа");
-        }
+    const handleEditQuestion = (question) => {
+        setEditingQuestionId(question.id);
+        setNewQuestion({
+            text: question.text,
+            answers: [...question.answers]
+        });
     };
 
-    const handleUpdateAnswer = async (answerId, answerData) => {
+    const handleUpdateQuestion = async (formData) => {
         try {
-            await CourseService.updateAnswer(answerId, answerData);
+            await CourseService.updateQuestion(editingQuestion.id, {
+                text: formData.text,
+                test: Number(id)
+            });
+
+            // Handle answers
+            const existingAnswerIds = editingQuestion.answers.map(a => a.id);
+            const updatedAnswers = formData.answers;
+
+            // Delete answers that are no longer present
+            await Promise.all(
+                existingAnswerIds
+                    .filter(id => !updatedAnswers.find(a => a.id === id))
+                    .map(id => CourseService.deleteAnswer(id))
+            );
+
+            // Update or create answers
+            await Promise.all(updatedAnswers.map(answer => {
+                if (answer.id) {
+                    return CourseService.updateAnswer(answer.id, {
+                        text: answer.text,
+                        is_right: answer.is_right
+                    });
+                } else {
+                    return CourseService.createAnswer({
+                        ...answer,
+                        question: editingQuestion.id
+                    });
+                }
+            }));
+
             const updatedTest = await CourseService.getTestById(id);
             setQuestions(updatedTest.questions || []);
-            setShowAnswerModal(false);
+            setShowQuestionModal(false);
+            setEditingQuestion(null);
         } catch (error) {
-            setError(error.detail || "Ошибка при обновлении ответа");
+            setError(error.detail || "Ошибка при обновлении вопроса");
         }
     };
 
@@ -218,12 +336,12 @@ const EditTestPage = () => {
                 width: "100%"
             }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h1 style={{ color: "#5A3E36" }}>{testData.name}</h1>
+                    <h1 style={{ color: "#5A3E36" }}>{testData?.name}</h1>
                     <IconButton
                         icon="add_icon.svg"
                         text="Добавить вопрос"
                         onClick={() => {
-                            setCurrentQuestion(null);
+                            setEditingQuestion(null);
                             setShowQuestionModal(true);
                         }}
                     />
@@ -231,16 +349,22 @@ const EditTestPage = () => {
 
                 {error && <div className="alert alert-danger mb-4">{error}</div>}
 
-                {questions.map(question => (
+                {/* Questions list */}
+                {questions.map((question, index) => (
                     <div key={question.id} className="card mb-4">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-start mb-3">
-                                <h5 className="card-title">{question.text}</h5>
+                                <h5 className="card-title">
+                                    <span className="me-2" style={{ color: '#5A3E36' }}>
+                                        {index + 1}.
+                                    </span>
+                                    {question.text}
+                                </h5>
                                 <div className="d-flex gap-2">
                                     <IconButton
                                         icon="edit_icon.svg"
                                         onClick={() => {
-                                            setCurrentQuestion(question);
+                                            setEditingQuestion(question);
                                             setShowQuestionModal(true);
                                         }}
                                         variant="secondary"
@@ -255,20 +379,6 @@ const EditTestPage = () => {
                                 </div>
                             </div>
 
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6>Ответы:</h6>
-                                <IconButton
-                                    icon="add_icon.svg"
-                                    text="Добавить ответ"
-                                    onClick={() => {
-                                        setSelectedQuestionId(question.id);
-                                        setCurrentAnswer(null);
-                                        setShowAnswerModal(true);
-                                    }}
-                                    size="sm"
-                                />
-                            </div>
-
                             <div className="list-group">
                                 {question.answers.map(answer => (
                                     <div key={answer.id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -277,24 +387,6 @@ const EditTestPage = () => {
                                                 {answer.is_right ? "✓" : "✗"}
                                             </span>
                                             <span>{answer.text}</span>
-                                        </div>
-                                        <div className="d-flex gap-2">
-                                            <IconButton
-                                                icon="edit_icon.svg"
-                                                onClick={() => {
-                                                    setSelectedQuestionId(question.id);
-                                                    setCurrentAnswer(answer);
-                                                    setShowAnswerModal(true);
-                                                }}
-                                                variant="secondary"
-                                                size="sm"
-                                            />
-                                            <IconButton
-                                                icon="delete_icon.svg"
-                                                onClick={() => handleDeleteAnswer(answer.id)}
-                                                variant="danger"
-                                                size="sm"
-                                            />
                                         </div>
                                     </div>
                                 ))}
@@ -305,37 +397,25 @@ const EditTestPage = () => {
 
                 <Modal
                     isOpen={showQuestionModal}
-                    onClose={() => setShowQuestionModal(false)}
-                    title={currentQuestion ? "Редактировать вопрос" : "Создать вопрос"}
+                    onClose={() => {
+                        setShowQuestionModal(false);
+                        setEditingQuestion(null);
+                    }}
+                    title={editingQuestion ? "Редактировать вопрос" : "Создать вопрос"}
                 >
                     <QuestionForm
-                        initialData={currentQuestion}
-                        onSave={(data) => {
-                            if (currentQuestion) {
-                                handleUpdateQuestion(currentQuestion.id, data);
+                        initialData={editingQuestion}
+                        onSave={(formData) => {
+                            if (editingQuestion) {
+                                handleUpdateQuestion(formData);
                             } else {
-                                handleCreateQuestion(data);
+                                handleCreateQuestion(formData);
                             }
                         }}
-                        onCancel={() => setShowQuestionModal(false)}
-                    />
-                </Modal>
-
-                <Modal
-                    isOpen={showAnswerModal}
-                    onClose={() => setShowAnswerModal(false)}
-                    title={currentAnswer ? "Редактировать ответ" : "Создать ответ"}
-                >
-                    <AnswerForm
-                        initialData={currentAnswer}
-                        onSave={(data) => {
-                            if (currentAnswer) {
-                                handleUpdateAnswer(currentAnswer.id, data);
-                            } else {
-                                handleCreateAnswer(data);
-                            }
+                        onCancel={() => {
+                            setShowQuestionModal(false);
+                            setEditingQuestion(null);
                         }}
-                        onCancel={() => setShowAnswerModal(false)}
                     />
                 </Modal>
             </div>
