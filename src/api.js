@@ -365,6 +365,90 @@ export const CourseService = {
     );
     return handleErrors(response);
   },
+
+  createQuestion: async (questionData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(questionData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateQuestion: async (id, questionData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(questionData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteQuestion: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getQuestion: async (id) => {
+    if (!id || isNaN(id)) {
+      throw new Error('Invalid question ID');
+    }
+    const response = await fetch(
+      `${API_BASE_URL}/api/questions/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createAnswer: async (answerData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(answerData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateAnswer: async (id, answerData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(answerData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteAnswer: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/answers/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;

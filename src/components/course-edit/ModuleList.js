@@ -3,6 +3,7 @@ import TopicList from './TopicList';
 import IconButton from '../IconButton';
 import Modal from '../Modal';
 import { CourseService } from '../../api';
+import { Link } from 'react-router-dom';
 
 const TestForm = ({ onSave, onCancel, initialData }) => {
     const [formData, setFormData] = useState({
@@ -186,31 +187,36 @@ const ModuleList = ({
                         <h4>Тесты курса:</h4>
                         <div className="list-group">
                             {courseTests.map(test => (
-                                <div key={test.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 className="mb-1">{test.name}</h5>
-                                        <p className="mb-0 text-muted">{test.description}</p>
+                                <Link
+                                    to={`/teach/edit-test/${test.id}`}
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <div className="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 className="mb-1">{test.name}</h5>
+                                            <p className="mb-0 text-muted">{test.description}</p>
+                                        </div>
+                                        <div className="d-flex gap-2">
+                                            <IconButton
+                                                icon="edit_icon.svg"
+                                                onClick={() => {
+                                                    setError("");
+                                                    setIsEntranceTest(true);
+                                                    setCurrentTestData(test);
+                                                    setShowTestModal(true);
+                                                }}
+                                                variant="secondary"
+                                                size="sm"
+                                            />
+                                            <IconButton
+                                                icon="delete_icon.svg"
+                                                onClick={() => handleDeleteTest(test.id)}
+                                                variant="danger"
+                                                size="sm"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="d-flex gap-2">
-                                        <IconButton
-                                            icon="edit_icon.svg"
-                                            onClick={() => {
-                                                setError("");
-                                                setIsEntranceTest(true);
-                                                setCurrentTestData(test);
-                                                setShowTestModal(true);
-                                            }}
-                                            variant="secondary"
-                                            size="sm"
-                                        />
-                                        <IconButton
-                                            icon="delete_icon.svg"
-                                            onClick={() => handleDeleteTest(test.id)}
-                                            variant="danger"
-                                            size="sm"
-                                        />
-                                    </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     </div>
@@ -259,32 +265,37 @@ const ModuleList = ({
                                     <h4>Тесты модуля:</h4>
                                     <div className="list-group">
                                         {moduleTests[module.id].map(test => (
-                                            <div key={test.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h5 className="mb-1">{test.name}</h5>
-                                                    <p className="mb-0 text-muted">{test.description}</p>
+                                            <Link
+                                                to={`/teach/edit-test/${test.id}`}
+                                                style={{ textDecoration: 'none', color: 'inherit' }}
+                                            >
+                                                <div className="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h5 className="mb-1">{test.name}</h5>
+                                                        <p className="mb-0 text-muted">{test.description}</p>
+                                                    </div>
+                                                    <div className="d-flex gap-2">
+                                                        <IconButton
+                                                            icon="edit_icon.svg"
+                                                            onClick={() => {
+                                                                setError("");
+                                                                setIsEntranceTest(false);
+                                                                setCurrentModuleId(module.id);
+                                                                setCurrentTestData(test);
+                                                                setShowTestModal(true);
+                                                            }}
+                                                            variant="secondary"
+                                                            size="sm"
+                                                        />
+                                                        <IconButton
+                                                            icon="delete_icon.svg"
+                                                            onClick={() => handleDeleteTest(test.id)}
+                                                            variant="danger"
+                                                            size="sm"
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div className="d-flex gap-2">
-                                                    <IconButton
-                                                        icon="edit_icon.svg"
-                                                        onClick={() => {
-                                                            setError("");
-                                                            setIsEntranceTest(false);
-                                                            setCurrentModuleId(module.id);
-                                                            setCurrentTestData(test);
-                                                            setShowTestModal(true);
-                                                        }}
-                                                        variant="secondary"
-                                                        size="sm"
-                                                    />
-                                                    <IconButton
-                                                        icon="delete_icon.svg"
-                                                        onClick={() => handleDeleteTest(test.id)}
-                                                        variant="danger"
-                                                        size="sm"
-                                                    />
-                                                </div>
-                                            </div>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>
