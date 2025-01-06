@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { auth } from "../auth";
 import './Header.css';
+import * as bootstrap from 'bootstrap';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = auth.isAuthenticated();
   const userData = auth.getUserData();
+  const collapseRef = useRef(null);
+  const bsCollapse = useRef(null);
+
+  useEffect(() => {
+    // Initialize collapse
+    if (collapseRef.current) {
+      bsCollapse.current = new bootstrap.Collapse(collapseRef.current, {
+        toggle: false
+      });
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (bsCollapse.current) {
+        bsCollapse.current.dispose();
+      }
+    };
+  }, []);
+
+  const toggleNavbar = () => {
+    if (bsCollapse.current) {
+      bsCollapse.current.toggle();
+    }
+  };
 
   const handleLogout = () => {
     auth.logout();
@@ -76,15 +101,14 @@ const Header = () => {
         <button
           className="navbar-toggler"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          onClick={toggleNavbar}
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div className="collapse navbar-collapse" id="navbarNav" ref={collapseRef}>
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
               <Link
