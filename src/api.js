@@ -307,6 +307,64 @@ export const CourseService = {
     );
     return handleErrors(response);
   },
+
+  createModuleTest: async (testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/create_module_test/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  createEntranceTest: async (testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/create_entrance_test/`,
+      {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  updateTest: async (id, testData) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(testData),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  deleteTest: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
+
+  getTestById: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/tests/${id}/`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
 };
 
 export default userService;
