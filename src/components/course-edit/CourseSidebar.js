@@ -52,13 +52,15 @@ const CourseSidebar = ({ courseData, isMobile, onEdit, onDelete }) => {
         marginTop: "15px"
     };
 
-    const navStyle = isMobile ? {
+    const buttonsContainerStyle = isMobile ? {
         display: "flex",
         gap: "10px",
-        alignItems: "center"
+        marginLeft: "auto"
     } : {
-        flex: "1",
-        marginTop: "20px"
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        marginTop: "15px"
     };
 
     const linkStyle = (isActiveLink) => ({
@@ -86,7 +88,7 @@ const CourseSidebar = ({ courseData, isMobile, onEdit, onDelete }) => {
             <h3 style={titleStyle}>
                 {courseData?.name || "Loading..."}
             </h3>
-            <div className="d-flex flex-column gap-2 mt-3">
+            <div style={buttonsContainerStyle}>
                 <IconButton
                     icon="edit_icon.svg"
                     text={isMobile ? "" : "Изменить курс"}

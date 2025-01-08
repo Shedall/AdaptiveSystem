@@ -176,6 +176,14 @@ const EditCoursePage = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
             <Header />
+            {isMobile && (
+                <CourseSidebar
+                    courseData={courseData}
+                    isMobile={true}
+                    onEdit={() => setShowEditModal(true)}
+                    onDelete={() => setShowDeleteModal(true)}
+                />
+            )}
             <div style={{
                 display: "flex",
                 flex: 1
@@ -183,7 +191,7 @@ const EditCoursePage = () => {
                 {!isMobile && (
                     <CourseSidebar
                         courseData={courseData}
-                        isMobile={isMobile}
+                        isMobile={false}
                         onEdit={() => setShowEditModal(true)}
                         onDelete={() => setShowDeleteModal(true)}
                     />

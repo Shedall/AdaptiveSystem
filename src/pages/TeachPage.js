@@ -57,11 +57,11 @@ const TeachPage = () => {
       try {
         // Вызов API для удаления курса
         await CourseService.deleteCourse(courseId);
-  
+
         // Получение обновленного списка курсов после удаления
         const updatedCourses = await CourseService.getMyCourses();
         setCourses(updatedCourses.results); // Обновляем список курсов
-  
+
       } catch (error) {
         console.error('Ошибка при удалении курса:', error);
         alert(error.detail || "Ошибка при удалении курса");
@@ -129,31 +129,20 @@ const TeachPage = () => {
                       </div>
                       <div className="col-8">
                         <div className="card-body d-flex flex-column h-100">
-                        <div className="d-flex justify-content-between align-items-start">
-            <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
-            <div className="d-flex align-items-center">
-              <span
-                className={`badge ${course.status === "Опубликован" ? "bg-success" : "bg-warning"}`}
-                style={{ fontSize: "0.8rem" }}
-                          >
-                            {course.status || 'Черновик'}
-                          </span>
-                          <IconButton
-                                icon="delete_icon.svg"
-                                onClick={(event) => handleDeleteCourse(course.id, event)} // Передаем событие
-                                variant="danger"
-                                size="sm"
-                              />
-
-                                </div>
-                              </div>
+                          <div className="d-flex justify-content-between align-items-start">
+                            <h5 className="card-title" style={{ color: "#5A3E36" }}>{course.name}</h5>
+                            <span
+                              className={`badge ${course.status === "Опубликован" ? "bg-success" : "bg-warning"}`}
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              {course.status || 'Черновик'}
+                            </span>
+                          </div>
                           <p className="card-text text-muted mb-2">{course.description}</p>
                           <div className="mt-auto">
                             <small className="text-muted">
                               {getCategoryName(course.category) || 'Без категории'}
                             </small>
-
-                            
                           </div>
                         </div>
                       </div>
