@@ -112,6 +112,16 @@ export const CourseService = {
     return handleErrors(response);
   },
 
+  deleteCourse: async (id) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/courses/${id}/`,
+      {
+        method: 'DELETE',
+        headers: getHeaders(),
+      }
+    );
+    return handleErrors(response);
+  },
   getCategories: async (searchQuery = '') => {
     const response = await fetch(`${API_BASE_URL}/api/courses/categories/?search=${searchQuery}`, {
       method: 'GET',
