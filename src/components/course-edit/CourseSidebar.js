@@ -1,15 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import IconButton from '../IconButton';
 
-const CourseSidebar = ({ courseData, isMobile }) => {
+const CourseSidebar = ({ courseData, isMobile, onEdit, onDelete }) => {
     const location = useLocation();
     const { id } = useParams();
 
     const isActive = (path) => location.pathname === path;
-
-    const menuItems = [
-        { path: `/teach/edit-course/${id}`, label: "Редактировать" },
-    ];
 
     const sidebarStyle = isMobile ? {
         width: '100%',
@@ -89,17 +86,22 @@ const CourseSidebar = ({ courseData, isMobile }) => {
             <h3 style={titleStyle}>
                 {courseData?.name || "Loading..."}
             </h3>
-            <nav style={navStyle}>
-                {menuItems.map((item) => (
-                    <Link
-                        key={item.path}
-                        to={item.path}
-                        style={linkStyle(isActive(item.path))}
-                    >
-                        {item.label}
-                    </Link>
-                ))}
-            </nav>
+            <div className="d-flex flex-column gap-2 mt-3">
+                <IconButton
+                    icon="edit_icon.svg"
+                    text={isMobile ? "" : "Изменить курс"}
+                    onClick={onEdit}
+                    variant="secondary"
+                    size="sm"
+                />
+                <IconButton
+                    icon="delete_icon.svg"
+                    text={isMobile ? "" : "Удалить курс"}
+                    onClick={onDelete}
+                    variant="danger"
+                    size="sm"
+                />
+            </div>
         </div>
     );
 };

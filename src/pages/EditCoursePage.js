@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { CourseService } from "../api";
@@ -8,6 +8,7 @@ import CourseSidebar from '../components/course-edit/CourseSidebar';
 import ModuleForm from '../components/course-edit/ModuleForm';
 import TopicForm from '../components/course-edit/TopicForm';
 import ModuleList from '../components/course-edit/ModuleList';
+import CourseForm from '../components/course-edit/CourseForm';
 
 const EditCoursePage = () => {
     const { id } = useParams();
@@ -20,6 +21,9 @@ const EditCoursePage = () => {
     const [showModuleModal, setShowModuleModal] = useState(false);
     const [showTopicModal, setShowTopicModal] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -135,6 +139,26 @@ const EditCoursePage = () => {
         setShowTopicModal(true);
     };
 
+    const handleEditCourse = async (formData) => {
+        try {
+            await CourseService.updateCourse(id, formData);
+            const updatedCourse = await CourseService.getCourseById(id);
+            setCourseData(updatedCourse);
+            setShowEditModal(false);
+        } catch (error) {
+            setError(error.detail || "Ошибка при обновлении курса");
+        }
+    };
+
+    const handleDeleteCourse = async () => {
+        try {
+            await CourseService.deleteCourse(id);
+            navigate('/teach');
+        } catch (error) {
+            setError(error.detail || "Ошибка при удалении курса");
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
@@ -152,24 +176,22 @@ const EditCoursePage = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#F7F3EF" }}>
             <Header />
-            {isMobile && <CourseSidebar courseData={courseData} isMobile={true} />}
             <div style={{
                 display: "flex",
-                flex: "1",
-                overflow: "hidden",
-                maxWidth: "1400px",
-                margin: "0 auto",
-                width: "100%",
-                paddingLeft: isMobile ? "20px" : windowWidth > 1400 ? "120px" : "40px",
-                paddingRight: isMobile ? "20px" : windowWidth > 1400 ? "120px" : "40px",
-                gap: "40px"
+                flex: 1
             }}>
-                {!isMobile && <CourseSidebar courseData={courseData} isMobile={false} />}
+                {!isMobile && (
+                    <CourseSidebar
+                        courseData={courseData}
+                        isMobile={isMobile}
+                        onEdit={() => setShowEditModal(true)}
+                        onDelete={() => setShowDeleteModal(true)}
+                    />
+                )}
                 <div style={{
                     flex: "1",
                     padding: "20px",
-                    overflowY: "auto",
-                    maxWidth: "1200px",
+                    maxWidth: isMobile ? "100%" : "calc(100% - 250px)",
                     margin: "0 auto",
                     width: "100%"
                 }}>
@@ -225,6 +247,45 @@ const EditCoursePage = () => {
                                 setEditingTopic(null);
                             }}
                         />
+                    </Modal>
+
+                    <Modal
+                        isOpen={showEditModal}
+                        onClose={() => setShowEditModal(false)}
+                        title="Редактировать курс"
+                    >
+                        <CourseForm
+                            initialData={courseData}
+                            onSave={handleEditCourse}
+                            onCancel={() => setShowEditModal(false)}
+                        />
+                    </Modal>
+
+                    <Modal
+                        isOpen={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        title="Удалить курс"
+                    >
+                        <div className="p-3">
+                            <p>Вы уверены, что хотите удалить этот курс?</p>
+                            <p>Это действие нельзя будет отменить.</p>
+                            <div className="d-flex gap-2 mt-4">
+                                <button
+                                    className="btn"
+                                    onClick={handleDeleteCourse}
+                                    style={{ backgroundColor: "#dc3545", color: "#fff" }}
+                                >
+                                    Удалить
+                                </button>
+                                <button
+                                    className="btn"
+                                    onClick={() => setShowDeleteModal(false)}
+                                    style={{ backgroundColor: "#D2C4B3", color: "#5A3E36" }}
+                                >
+                                    Отмена
+                                </button>
+                            </div>
+                        </div>
                     </Modal>
                 </div>
             </div>

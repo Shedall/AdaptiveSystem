@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { CourseService } from "../../api";
 
-const CourseForm = ({ onSave, onCancel }) => {
+const CourseForm = ({ onSave, onCancel, initialData = null }) => {
     const [formData, setFormData] = useState({
-        name: "",
-        description: "",
+        name: initialData?.name || "",
+        description: initialData?.description || "",
         image: null,
-        category: "",
+        category: initialData?.category || "",
     });
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState("");
@@ -97,7 +97,7 @@ const CourseForm = ({ onSave, onCancel }) => {
             {error && <div className="alert alert-danger mb-3">{error}</div>}
             <div className="d-flex gap-2">
                 <button type="submit" className="btn" style={{ backgroundColor: "#5A3E36", color: "#fff" }}>
-                    Создать курс
+                    {initialData ? "Сохранить изменения" : "Создать курс"}
                 </button>
                 <button
                     type="button"
