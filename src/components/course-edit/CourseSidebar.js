@@ -1,15 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import IconButton from '../IconButton';
 
-const CourseSidebar = ({ courseData, isMobile }) => {
+const CourseSidebar = ({ courseData, isMobile, onEdit, onDelete }) => {
     const location = useLocation();
     const { id } = useParams();
 
     const isActive = (path) => location.pathname === path;
-
-    const menuItems = [
-        { path: `/teach/edit-course/${id}`, label: "Редактировать" },
-    ];
 
     const sidebarStyle = isMobile ? {
         width: '100%',
@@ -55,13 +52,15 @@ const CourseSidebar = ({ courseData, isMobile }) => {
         marginTop: "15px"
     };
 
-    const navStyle = isMobile ? {
+    const buttonsContainerStyle = isMobile ? {
         display: "flex",
         gap: "10px",
-        alignItems: "center"
+        marginLeft: "auto"
     } : {
-        flex: "1",
-        marginTop: "20px"
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        marginTop: "15px"
     };
 
     const linkStyle = (isActiveLink) => ({
@@ -89,17 +88,22 @@ const CourseSidebar = ({ courseData, isMobile }) => {
             <h3 style={titleStyle}>
                 {courseData?.name || "Loading..."}
             </h3>
-            <nav style={navStyle}>
-                {menuItems.map((item) => (
-                    <Link
-                        key={item.path}
-                        to={item.path}
-                        style={linkStyle(isActive(item.path))}
-                    >
-                        {item.label}
-                    </Link>
-                ))}
-            </nav>
+            <div style={buttonsContainerStyle}>
+                <IconButton
+                    icon="edit_icon.svg"
+                    text={isMobile ? "" : "Изменить курс"}
+                    onClick={onEdit}
+                    variant="secondary"
+                    size="sm"
+                />
+                <IconButton
+                    icon="delete_icon.svg"
+                    text={isMobile ? "" : "Удалить курс"}
+                    onClick={onDelete}
+                    variant="danger"
+                    size="sm"
+                />
+            </div>
         </div>
     );
 };

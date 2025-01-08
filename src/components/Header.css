@@ -43,7 +43,7 @@
         left: 0 !important;
         right: 0 !important;
         padding: 1rem !important;
-        z-index: 1000 !important;
+        z-index: 9999 !important;
     }
 
     .navbar-nav {
