@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import EditCoursePage from "./pages/EditCoursePage";
 import EditTopicPage from "./pages/EditTopicPage";
 import EditTestPage from "./pages/EditTestPage";
+import CourseDetailsPage from "./pages/CourseDetailsPage";
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = auth.isAuthenticated();
@@ -84,6 +85,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+        <Route path="/courses/:id" element={<CourseDetailsPage />} />
       </Routes>
     </Router>
   );
